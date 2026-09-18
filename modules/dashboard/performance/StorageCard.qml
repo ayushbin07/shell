@@ -2,12 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Caelestia.Config
-import Caelestia.I18n
 import Caelestia.Services
 import qs.components
 import qs.components.controls
 import qs.services
-import qs.utils
 
 StyledRect {
     id: root
@@ -66,14 +64,14 @@ StyledRect {
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: Strings.percentOne(root.percentage)
+                        text: Math.round(root.percentage * 100) + "%"
                         font: Tokens.font.title.builders.large.width(90).build()
                         color: root.accent
                     }
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: Tr.trCtx("Used", "storage used")
+                        text: qsTr("Used")
                         font: Tokens.font.body.small
                         color: Colours.palette.m3onSurfaceVariant
                     }
@@ -85,12 +83,18 @@ StyledRect {
                 spacing: Tokens.spacing.extraSmall
 
                 StyledText {
-                    text: Tr.tr("Storage")
+                    text: qsTr("Storage")
                     font: Tokens.font.title.medium
                 }
 
                 StyledText {
-                    text: Storage.primaryDisk ? Units.formatKibUsage(Storage.primaryDisk.used, Storage.primaryDisk.total) : Tr.tr("No disks detected")
+                    text: {
+                        if (!Storage.primaryDisk)
+                            return qsTr("No disks detected");
+
+                        const fmt = UsageFmt.formatKib(Storage.primaryDisk.used, Storage.primaryDisk.total);
+                        return `${+fmt.value.toFixed(1)} / ${+fmt.total.toFixed(1)} ${fmt.unit}`;
+                    }
                     font: Tokens.font.body.large
                     color: root.accent
                 }
@@ -103,7 +107,7 @@ StyledRect {
             type: SplitButton.Tonal
             disabled: !Storage.disks.length
             fallbackIcon: "storage"
-            fallbackText: Tr.tr("No disks")
+            fallbackText: qsTr("No disks")
             menuOnTop: true
             minLeftWidth: row.implicitWidth * 0.6
 

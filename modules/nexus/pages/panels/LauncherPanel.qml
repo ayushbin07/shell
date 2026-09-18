@@ -3,13 +3,12 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
-import Caelestia.I18n
 import qs.modules.nexus.common
 
 PageBase {
     id: root
 
-    title: Tr.tr("Launcher")
+    title: qsTr("Launcher")
     isSubPage: true
 
     ColumnLayout {
@@ -21,19 +20,19 @@ PageBase {
         // General
         SectionHeader {
             first: true
-            text: Tr.tr("General")
+            text: qsTr("General")
         }
 
         ToggleRow {
             first: true
-            text: Tr.trCtx("Enabled", "toggle label")
+            text: qsTr("Enabled")
             checked: Config.launcher.enabled
             onToggled: GlobalConfig.launcher.enabled = checked
         }
 
         ToggleRow {
-            text: Tr.tr("Show on hover")
-            subtext: Tr.tr("Reveal when the cursor reaches the screen edge")
+            text: qsTr("Show on hover")
+            subtext: qsTr("Reveal when the cursor reaches the screen edge")
             checked: Config.launcher.showOnHover
             onToggled: GlobalConfig.launcher.showOnHover = checked
         }
@@ -42,9 +41,9 @@ PageBase {
             id: prefixRow
 
             last: true
-            label: Tr.tr("Action prefix")
-            subtext: Tr.tr("Prefix used to run actions in the launcher")
-            errorText: Tr.tr("Prefix must not be alphanumeric")
+            label: qsTr("Action prefix")
+            subtext: qsTr("Prefix used to run actions in the launcher")
+            errorText: qsTr("Prefix must not be alphanumeric")
             value: GlobalConfig.launcher.actionPrefix === ">" ? "" : GlobalConfig.launcher.actionPrefix // TODO: replace with empty only when not loaded once loaded state is exposed
             placeholderText: ">"
             maximumLength: 1
@@ -62,12 +61,12 @@ PageBase {
 
         // Display
         SectionHeader {
-            text: Tr.tr("Display")
+            text: qsTr("Display")
         }
 
         StepperRow {
             first: true
-            label: Tr.tr("Max items shown")
+            label: qsTr("Max items shown")
             value: Config.launcher.maxShown
             from: 1
             to: 20
@@ -76,7 +75,7 @@ PageBase {
         }
 
         StepperRow {
-            label: Tr.tr("Max wallpapers")
+            label: qsTr("Max wallpapers")
             value: Config.launcher.maxWallpapers
             from: 1
             to: 30
@@ -86,8 +85,8 @@ PageBase {
 
         StepperRow {
             last: true
-            label: Tr.tr("Drag threshold")
-            subtext: Tr.tr("Pixels dragged before the launcher opens")
+            label: qsTr("Drag threshold")
+            subtext: qsTr("Pixels dragged before the launcher opens")
             value: Config.launcher.dragThreshold
             from: 0
             to: 200
@@ -97,58 +96,58 @@ PageBase {
 
         // Behaviour
         SectionHeader {
-            text: Tr.tr("Behaviour")
+            text: qsTr("Behaviour")
         }
 
         ToggleRow {
             first: true
-            text: Tr.tr("Vim keybinds")
-            subtext: Tr.tr("Navigate results with Ctrl+hjkl")
+            text: qsTr("Vim keybinds")
+            subtext: qsTr("Navigate results with Ctrl+hjkl")
             checked: GlobalConfig.launcher.vimKeybinds
             onToggled: GlobalConfig.launcher.vimKeybinds = checked
         }
 
         ToggleRow {
             last: true
-            text: Tr.tr("Enable dangerous actions")
-            subtext: Tr.tr("Allow actions that shut down or log out")
+            text: qsTr("Enable dangerous actions")
+            subtext: qsTr("Allow actions that shut down or log out")
             checked: GlobalConfig.launcher.enableDangerousActions
             onToggled: GlobalConfig.launcher.enableDangerousActions = checked
         }
 
         // Fuzzy search
         SectionHeader {
-            text: Tr.tr("Fuzzy search")
+            text: qsTr("Fuzzy search")
         }
 
         ToggleRow {
             first: true
-            text: Tr.tr("Apps")
+            text: qsTr("Apps")
             checked: GlobalConfig.launcher.useFuzzy.apps
             onToggled: GlobalConfig.launcher.useFuzzy.apps = checked
         }
 
         ToggleRow {
-            text: Tr.tr("Actions")
+            text: qsTr("Actions")
             checked: GlobalConfig.launcher.useFuzzy.actions
             onToggled: GlobalConfig.launcher.useFuzzy.actions = checked
         }
 
         ToggleRow {
-            text: Tr.tr("Schemes")
+            text: qsTr("Schemes")
             checked: GlobalConfig.launcher.useFuzzy.schemes
             onToggled: GlobalConfig.launcher.useFuzzy.schemes = checked
         }
 
         ToggleRow {
-            text: Tr.tr("Variants")
+            text: qsTr("Variants")
             checked: GlobalConfig.launcher.useFuzzy.variants
             onToggled: GlobalConfig.launcher.useFuzzy.variants = checked
         }
 
         ToggleRow {
             last: true
-            text: Tr.tr("Wallpapers")
+            text: qsTr("Wallpapers")
             checked: GlobalConfig.launcher.useFuzzy.wallpapers
             onToggled: GlobalConfig.launcher.useFuzzy.wallpapers = checked
         }

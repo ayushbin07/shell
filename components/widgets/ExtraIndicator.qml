@@ -32,7 +32,7 @@ StyledRect {
 
         anchors.centerIn: parent
         animate: parent.opacity > 0
-        text: `+${parent.extra}`
+        text: qsTr("+%1").arg(parent.extra)
         color: Colours.palette.m3onTertiary
     }
 

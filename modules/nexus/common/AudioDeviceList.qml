@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 import qs.modules.nexus.common
@@ -76,7 +75,7 @@ ItemList {
 
             StyledText {
                 Layout.fillWidth: true
-                text: device.modelData?.description || device.modelData?.name || Tr.trCtx("Unknown", "unknown audio device")
+                text: device.modelData?.description || device.modelData?.name || qsTr("Unknown")
                 font: Tokens.font.body.small
                 elide: Text.ElideRight
             }

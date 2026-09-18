@@ -1,7 +1,6 @@
 pragma Singleton
 
 import QtQuick
-import Caelestia.I18n
 
 QtObject {
     id: root
@@ -9,85 +8,85 @@ QtObject {
     readonly property list<var> pages: [
         // Appearance
         {
-            label: Tr.tr("Wallpaper & style"),
+            label: qsTr("Wallpaper & style"),
             icon: "palette",
-            description: Tr.tr("Wallpaper, fonts, colours"),
+            description: qsTr("Wallpaper, fonts, colours"),
             category: "appearance"
         },
 
         // Connectivity
         // TODO
         // {
-        //     label: Tr.tr("Display"),
+        //     label: qsTr("Display"),
         //     icon: "monitor",
-        //     description: Tr.tr("Output configuration"),
+        //     description: qsTr("Output configuration"),
         //     category: "connectivity"
         // },
         {
-            label: Tr.tr("Network"),
+            label: qsTr("Network"),
             icon: "wifi",
-            description: Tr.tr("Wi-Fi, ethernet, VPN"),
+            description: qsTr("Wi-Fi, ethernet, VPN"),
             category: "connectivity"
         },
         {
-            label: Tr.tr("Connected devices"),
+            label: qsTr("Connected devices"),
             icon: "devices_other",
-            description: Tr.tr("Bluetooth, pairing"),
+            description: qsTr("Bluetooth, pairing"),
             category: "connectivity",
             noFill: true
         },
         {
-            label: Tr.tr("Audio"),
+            label: qsTr("Audio"),
             icon: "volume_up",
-            description: Tr.tr("App volumes, sound devices"),
+            description: qsTr("App volumes, sound devices"),
             category: "connectivity"
         },
 
         // System
         {
-            label: Tr.tr("Updates"),
+            label: qsTr("Updates"),
             icon: "update",
-            description: Tr.tr("System updates"),
+            description: qsTr("System updates"),
             category: "system"
         },
         {
-            label: Tr.tr("Plugins"),
+            label: qsTr("Plugins"),
             icon: "extension",
-            description: Tr.tr("Manage plugins"),
+            description: qsTr("Manage plugins"),
             category: "system"
         },
 
         // Shell
         {
-            label: Tr.tr("Panels"),
+            label: qsTr("Panels"),
             icon: "dock_to_bottom",
-            description: Tr.tr("Dashboard, taskbar, launcher, sidebar"),
+            description: qsTr("Dashboard, taskbar, launcher, sidebar"),
             category: "shell"
         },
         {
-            label: Tr.tr("Apps"),
+            label: qsTr("Apps"),
             icon: "apps",
-            description: Tr.tr("Default apps, favourites, hidden apps"),
+            description: qsTr("Default apps, favourites, hidden apps"),
             category: "shell"
         },
         {
-            label: Tr.tr("Services"),
+            label: qsTr("Services"),
             icon: "build",
-            description: Tr.tr("Poll intervals, lyrics backend"),
+            description: qsTr("Poll intervals, lyrics backend"),
             category: "shell"
         },
         {
-            label: Tr.tr("Language & region"),
+            label: qsTr("Language & region"),
             icon: "globe",
-            description: Tr.tr("UI language, weather location, display units"),
+            description: qsTr("UI language, weather location, display units"),
             category: "shell"
         },
 
         // About
         {
-            label: Tr.tr("About"),
+            label: qsTr("About"),
             icon: "info",
-            description: Tr.tr("System information, credits"),
+            description: qsTr("System information, credits"),
             category: "about"
         },
     ]

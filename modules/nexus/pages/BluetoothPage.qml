@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Bluetooth
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.services
@@ -18,7 +17,7 @@ PageBase {
     readonly property BluetoothAdapter adapter: Bluetooth.defaultAdapter // qmllint disable unresolved-type
     readonly property bool btEnabled: adapter?.enabled ?? false
 
-    title: Tr.tr("Connected devices")
+    title: qsTr("Connected devices")
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -28,7 +27,7 @@ PageBase {
 
         ToggleRow {
             first: true
-            text: Tr.tr("Bluetooth")
+            text: qsTr("Bluetooth")
             font: Tokens.font.body.medium
             horizontalPadding: Tokens.padding.largeIncreased
             checked: root.btEnabled
@@ -43,7 +42,7 @@ PageBase {
 
             showList: root.btEnabled
             placeholderIcon: root.btEnabled ? "devices_other" : "bluetooth_disabled"
-            placeholderText: root.btEnabled ? Tr.tr("No saved devices") : Tr.tr("Bluetooth disabled")
+            placeholderText: root.btEnabled ? qsTr("No saved devices") : qsTr("Bluetooth disabled")
 
             model: ScriptModel {
                 values: Bluetooth.devices.values.filter(d => d.bonded).sort((a, b) => (b.connected - a.connected) || a.name.localeCompare(b.name)) // qmllint disable unresolved-type
@@ -116,21 +115,14 @@ PageBase {
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: device.modelData?.name ?? Tr.trCtx("Unknown", "unknown bluetooth device")
+                            text: device.modelData?.name ?? qsTr("Unknown")
                             font: Tokens.font.body.small
                             elide: Text.ElideRight
                         }
 
                         StyledText {
                             Layout.fillWidth: true
-                            text: {
-                                if (!device.connected)
-                                    return Tr.trCtx("Saved", "bluetooth device state");
-                                if (device.modelData?.batteryAvailable)
-                                    // TRANSLATORS: %1 = battery level, already formatted as a percentage
-                                    return Tr.trCtx("Connected • %1", "bluetooth device state with battery").arg(Strings.percentOne(device.modelData.battery));
-                                return Tr.trCtx("Connected", "bluetooth device state");
-                            }
+                            text: device.connected ? qsTr("Connected%1").arg(device.modelData?.batteryAvailable ? " • " + Math.round(device.modelData.battery * 100) + "%" : "") : qsTr("Saved")
                             color: Colours.palette.m3outline
                             font: Tokens.font.label.small
                             elide: Text.ElideRight
@@ -179,7 +171,7 @@ PageBase {
         RowButton {
             last: true
             icon: "add"
-            text: Tr.tr("Pair new device")
+            text: qsTr("Pair new device")
             disabled: !root.btEnabled
             onClicked: root.nState.openSubPage(2)
         }
@@ -188,9 +180,8 @@ PageBase {
             Layout.topMargin: Tokens.spacing.large - parent.spacing
 
             first: true
-            // TRANSLATORS: adjective: other devices can find this computer
-            text: Tr.trCtx("Discoverable", "bluetooth setting")
-            subtext: Tr.tr("Allow nearby devices to find this one")
+            text: qsTr("Discoverable")
+            subtext: qsTr("Allow nearby devices to find this one")
             disabled: !root.btEnabled
             checked: root.adapter?.discoverable ?? false
             onToggled: {
@@ -205,9 +196,8 @@ PageBase {
 
         ToggleRow {
             last: true
-            // TRANSLATORS: adjective: other devices are allowed to pair with this computer
-            text: Tr.trCtx("Pairable", "bluetooth setting")
-            subtext: Tr.tr("Allow nearby devices to pair with this one")
+            text: qsTr("Pairable")
+            subtext: qsTr("Allow nearby devices to pair with this one")
             disabled: !root.btEnabled
             checked: root.adapter?.pairable ?? false
             onToggled: {

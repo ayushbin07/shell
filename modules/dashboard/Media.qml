@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Layouts
 import M3Shapes
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 
@@ -115,12 +114,12 @@ Item {
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: Tr.tr("Nothing playing")
+                        text: qsTr("Nothing playing")
                         font: Tokens.font.headline.medium
                     }
 
                     StyledText {
-                        text: Tr.tr("Play something for it to show up here!")
+                        text: qsTr("Play something for it to show up here!")
                         color: Colours.palette.m3onSurfaceVariant
                         font: Tokens.font.body.large
                     }

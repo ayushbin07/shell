@@ -2,23 +2,22 @@ pragma ComponentBehavior: Bound
 
 import QtQuick.Layouts
 import Caelestia.Config
-import Caelestia.I18n
 import qs.modules.nexus.common
 
 PageBase {
     id: root
 
     readonly property var builtinIcons: ({
-            lockStatus: Tr.tr("Lock keys"),
-            kbLayout: Tr.tr("Keyboard layout"),
-            audio: Tr.tr("Speakers"),
-            microphone: Tr.tr("Microphone"),
-            network: Tr.tr("Network"),
-            bluetooth: Tr.tr("Bluetooth"),
-            battery: Tr.tr("Battery")
+            lockStatus: qsTr("Lock keys"),
+            kbLayout: qsTr("Keyboard layout"),
+            audio: qsTr("Speakers"),
+            microphone: qsTr("Microphone"),
+            network: qsTr("Network"),
+            bluetooth: qsTr("Bluetooth"),
+            battery: qsTr("Battery")
         })
 
-    title: Tr.tr("Status icons")
+    title: qsTr("Status icons")
     isSubPage: true
 
     ColumnLayout {
@@ -30,7 +29,7 @@ PageBase {
         // Visible icons
         SectionHeader {
             first: true
-            text: Tr.tr("Visible icons")
+            text: qsTr("Visible icons")
         }
 
         ListEditor {
@@ -59,9 +58,9 @@ PageBase {
 
             rootParent: root.flickable
             icon: "add"
-            label: Tr.tr("Add entry")
-            header: Tr.tr("Add new entry")
-            acceptLabel: Tr.trCtx("Add", "button")
+            label: qsTr("Add entry")
+            header: qsTr("Add new entry")
+            acceptLabel: qsTr("Add")
 
             model: {
                 const builtins = Object.keys(root.builtinIcons).map(k => ({
@@ -84,14 +83,14 @@ PageBase {
 
         // Behaviour
         SectionHeader {
-            text: Tr.tr("Behaviour")
+            text: qsTr("Behaviour")
         }
 
         ToggleRow {
             first: true
             last: true
-            text: Tr.tr("Popout on hover")
-            subtext: Tr.tr("Show a details popout when hovering the status icons")
+            text: qsTr("Popout on hover")
+            subtext: qsTr("Show a details popout when hovering the status icons")
             checked: Config.bar.popouts.statusIcons
             onToggled: GlobalConfig.bar.popouts.statusIcons = checked
         }

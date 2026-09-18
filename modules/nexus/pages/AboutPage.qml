@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import Quickshell.Io
 import Caelestia
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 import qs.utils
@@ -18,7 +17,7 @@ PageBase {
     property string quickshellVersion
     property string cliVersion
 
-    title: Tr.tr("About")
+    title: qsTr("About")
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -86,73 +85,72 @@ PageBase {
 
         // System
         SectionHeader {
-            text: Tr.tr("System")
+            text: qsTr("System")
         }
 
         InfoRow {
             first: true
-            label: Tr.tr("Hostname")
+            label: qsTr("Hostname")
             value: SysInfo.hostname
         }
 
         InfoRow {
-            label: Tr.trCtx("Device", "system model name")
+            label: qsTr("Device")
             value: SysInfo.device
         }
 
         InfoRow {
-            label: Tr.tr("Distro")
+            label: qsTr("Distro")
             value: SysInfo.osPrettyName || SysInfo.osName
         }
 
         InfoRow {
-            label: Tr.tr("Kernel")
+            label: qsTr("Kernel")
             value: SysInfo.kernel
         }
 
         InfoRow {
             last: true
-            // TRANSLATORS: BIOS or UEFI firmware version
-            label: Tr.tr("Firmware")
+            label: qsTr("Firmware")
             value: SysInfo.firmware
         }
 
         // Software
         SectionHeader {
-            text: Tr.tr("Software")
+            text: qsTr("Software")
         }
 
         InfoRow {
             first: true
-            label: Tr.trCtx("Shell", "the caelestia shell itself, not a unix shell")
+            label: qsTr("Shell")
             value: CUtils.version || "…"
         }
 
         InfoRow {
-            label: Tr.trCtx("CLI", "the caelestia command line tool")
+            label: qsTr("CLI")
             value: root.cliVersion || "…"
         }
 
         InfoRow {
-            label: "Quickshell"
+            label: qsTr("Quickshell")
             value: root.quickshellVersion || "…"
         }
 
         InfoRow {
             last: true
-            label: "Qt"
+            label: qsTr("Qt")
             value: CUtils.qtVersion || "…"
         }
 
         // Plugins
         SectionHeader {
-            text: Tr.tr("Plugins")
+            text: qsTr("Plugins")
         }
 
         InfoRow {
             first: true
             last: true
-            label: Tr.tr("Loaded plugins")
+            label: qsTr("Loaded plugins")
             value: root.pluginCount.toString()
         }
     }

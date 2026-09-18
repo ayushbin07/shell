@@ -3,13 +3,12 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
-import Caelestia.I18n
 import qs.modules.nexus.common
 
 PageBase {
     id: root
 
-    title: Tr.tr("Sidebar")
+    title: qsTr("Sidebar")
     isSubPage: true
 
     ColumnLayout {
@@ -20,20 +19,20 @@ PageBase {
 
         SectionHeader {
             first: true
-            text: Tr.tr("General")
+            text: qsTr("General")
         }
 
         ToggleRow {
             first: true
-            text: Tr.trCtx("Enabled", "toggle label")
+            text: qsTr("Enabled")
             checked: Config.sidebar.enabled
             onToggled: GlobalConfig.sidebar.enabled = checked
         }
 
         StepperRow {
             last: true
-            label: Tr.tr("Drag threshold")
-            subtext: Tr.tr("Pixels dragged before the sidebar opens")
+            label: qsTr("Drag threshold")
+            subtext: qsTr("Pixels dragged before the sidebar opens")
             value: Config.sidebar.dragThreshold
             from: 0
             to: 200

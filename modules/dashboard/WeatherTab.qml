@@ -1,10 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
-import qs.utils
 
 Item {
     id: root
@@ -30,7 +28,7 @@ Item {
                 spacing: Tokens.spacing.extraSmall
 
                 StyledText {
-                    text: Weather.city || Tr.tr("Loading...")
+                    text: Weather.city || qsTr("Loading...")
                     font: Tokens.font.body.builders.large.size(28).weight(Font.DemiBold).build()
                     color: Colours.palette.m3onSurface
                 }
@@ -51,14 +49,14 @@ Item {
 
                 WeatherStat {
                     icon: "wb_twilight"
-                    label: Tr.tr("Sunrise")
+                    label: "Sunrise"
                     value: Weather.sunrise
                     colour: Colours.palette.m3tertiary
                 }
 
                 WeatherStat {
                     icon: "bedtime"
-                    label: Tr.tr("Sunset")
+                    label: "Sunset"
                     value: Weather.sunset
                     colour: Colours.palette.m3tertiary
                 }
@@ -112,20 +110,20 @@ Item {
 
             DetailCard {
                 icon: "water_drop"
-                label: Tr.tr("Humidity")
-                value: Strings.percent(Weather.humidity)
+                label: "Humidity"
+                value: Weather.humidity + "%"
                 colour: Colours.palette.m3secondary
             }
             DetailCard {
                 icon: "thermostat"
-                label: Tr.trCtx("Feels like", "apparent temperature")
+                label: "Feels Like"
                 value: Weather.feelsLike
                 colour: Colours.palette.m3primary
             }
             DetailCard {
                 icon: "air"
-                label: Tr.tr("Wind")
-                value: Weather.windSpeed ? Tr.tr("%1 km/h").arg(Weather.windSpeed) : "--"
+                label: "Wind"
+                value: Weather.windSpeed ? Weather.windSpeed + " km/h" : "--"
                 colour: Colours.palette.m3tertiary
             }
         }
@@ -134,7 +132,7 @@ Item {
             Layout.topMargin: Tokens.spacing.medium
             Layout.leftMargin: Tokens.padding.medium
             visible: forecastRepeater.count > 0
-            text: Tr.tr("7-day forecast")
+            text: qsTr("7-Day Forecast")
             font: Tokens.font.body.builders.medium.weight(Font.DemiBold).build()
             color: Colours.palette.m3onSurface
         }
@@ -168,7 +166,7 @@ Item {
 
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
-                            text: forecastItem.index === 0 ? Tr.trCtx("Today", "forecast column") : new Date(forecastItem.modelData.date).toLocaleDateString(Qt.locale(), "ddd")
+                            text: forecastItem.index === 0 ? qsTr("Today") : new Date(forecastItem.modelData.date).toLocaleDateString(Qt.locale(), "ddd")
                             font: Tokens.font.body.builders.medium.weight(Font.DemiBold).build()
                             color: Colours.palette.m3primary
                         }
@@ -192,9 +190,9 @@ Item {
                         StyledText {
                             Layout.alignment: Qt.AlignHCenter
                             text: {
-                                const min = Weather.formatTemp(forecastItem.modelData.minTempC, true);
-                                const max = Weather.formatTemp(forecastItem.modelData.maxTempC, true);
-                                return Tr.trCtx("%1 / %2", "min/max temperature").arg(min).arg(max);
+                                const min = Weather.formatTemp(forecastItem.modelData.minTempC).slice(0, -1);
+                                const max = Weather.formatTemp(forecastItem.modelData.maxTempC).slice(0, -1);
+                                return `${min} / ${max}`;
                             }
                             font: Tokens.font.body.builders.small.weight(Font.DemiBold).build()
                             color: Colours.palette.m3tertiary

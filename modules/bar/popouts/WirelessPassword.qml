@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.services
@@ -42,7 +41,7 @@ ColumnLayout {
                 connectButton.connecting = false;
                 connectButton.hasError = true;
                 connectButton.enabled = true;
-                connectButton.text = Tr.tr("Connect");
+                connectButton.text = qsTr("Connect");
                 passwordContainer.passwordBuffer = "";
                 // Delete the failed connection
                 if (root.network && root.network.ssid) {
@@ -61,7 +60,7 @@ ColumnLayout {
         passwordContainer.passwordBuffer = "";
         connectButton.connecting = false;
         connectButton.hasError = false;
-        connectButton.text = Tr.tr("Connect");
+        connectButton.text = qsTr("Connect");
         connectionMonitor.stop();
 
         // Return to network popout
@@ -186,7 +185,7 @@ ColumnLayout {
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: Tr.tr("Enter password")
+                text: qsTr("Enter password")
                 font: Tokens.font.body.builders.large.weight(Font.Medium).build()
             }
 
@@ -198,11 +197,10 @@ ColumnLayout {
                     if (root.network) {
                         const ssid = root.network.ssid;
                         if (ssid && ssid.length > 0) {
-                            // TRANSLATORS: %1 = the network SSID
-                            return Tr.tr("Network: %1").arg(ssid);
+                            return qsTr("Network: %1").arg(ssid);
                         }
                     }
-                    return Tr.tr("Unknown network");
+                    return qsTr("Network: Unknown");
                 }
                 color: Colours.palette.m3outline
                 font: Tokens.font.body.small
@@ -245,10 +243,10 @@ ColumnLayout {
                 visible: connectButton.connecting || connectButton.hasError
                 text: {
                     if (connectButton.hasError) {
-                        return Tr.tr("Connection failed. Please check your password and try again.");
+                        return qsTr("Connection failed. Please check your password and try again.");
                     }
                     if (connectButton.connecting) {
-                        return Tr.tr("Connecting...");
+                        return qsTr("Connecting...");
                     }
                     return "";
                 }
@@ -376,7 +374,7 @@ ColumnLayout {
                     id: placeholder
 
                     anchors.centerIn: parent
-                    text: Tr.tr("Password")
+                    text: qsTr("Password")
                     color: Colours.palette.m3outline
                     font: Tokens.font.mono.medium
                     opacity: passwordContainer.passwordBuffer ? 0 : 1
@@ -481,7 +479,7 @@ ColumnLayout {
                     Layout.minimumHeight: Tokens.font.body.medium.pointSize + Tokens.padding.medium * 2
                     inactiveColour: Colours.palette.m3secondaryContainer
                     inactiveOnColour: Colours.palette.m3onSecondaryContainer
-                    text: Tr.trCtx("Cancel", "button")
+                    text: qsTr("Cancel")
 
                     onClicked: root.closeDialog()
                 }
@@ -496,7 +494,7 @@ ColumnLayout {
                     Layout.minimumHeight: Tokens.font.body.medium.pointSize + Tokens.padding.medium * 2
                     inactiveColour: Colours.palette.m3primary
                     inactiveOnColour: Colours.palette.m3onPrimary
-                    text: Tr.tr("Connect")
+                    text: qsTr("Connect")
                     enabled: passwordContainer.passwordBuffer.length > 0 && !connecting
 
                     onClicked: {
@@ -515,7 +513,7 @@ ColumnLayout {
                         // Set connecting state
                         connecting = true;
                         enabled = false;
-                        text = Tr.tr("Connecting...");
+                        text = qsTr("Connecting...");
 
                         // Connect to network
                         NetworkConnection.connectWithPassword(root.network, password, result => {
@@ -527,7 +525,7 @@ ColumnLayout {
                                 connecting = false;
                                 hasError = true;
                                 enabled = true;
-                                text = Tr.tr("Connect");
+                                text = qsTr("Connect");
                                 passwordContainer.passwordBuffer = "";
                                 // Delete the failed connection
                                 if (root.network && root.network.ssid) {
@@ -539,7 +537,7 @@ ColumnLayout {
                                 connecting = false;
                                 hasError = true;
                                 enabled = true;
-                                text = Tr.tr("Connect");
+                                text = qsTr("Connect");
                                 passwordContainer.passwordBuffer = "";
                                 // Delete the failed connection
                                 if (root.network && root.network.ssid) {
@@ -588,7 +586,7 @@ ColumnLayout {
                 if (stillConnected) {
                     connectionMonitor.stop();
                     connectButton.connecting = false;
-                    connectButton.text = Tr.tr("Connect");
+                    connectButton.text = qsTr("Connect");
                     // Return to network popout on successful connection
                     if (root.popouts.currentName === "wirelesspassword") {
                         root.popouts.currentName = "network";
@@ -612,7 +610,7 @@ ColumnLayout {
                 connectButton.connecting = false;
                 connectButton.hasError = true;
                 connectButton.enabled = true;
-                connectButton.text = Tr.tr("Connect");
+                connectButton.text = qsTr("Connect");
                 passwordContainer.passwordBuffer = "";
                 // Delete the failed connection
                 Nmcli.forgetNetwork(ssid);

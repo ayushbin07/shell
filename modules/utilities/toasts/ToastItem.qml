@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import Caelestia
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.effects
 import qs.services
@@ -97,7 +96,7 @@ StyledRect {
                 id: title
 
                 Layout.fillWidth: true
-                text: Tr.trMarked(root.modelData.title)
+                text: root.modelData.title
                 color: {
                     if (root.modelData.type === Toast.Success)
                         return Colours.palette.m3onSuccessContainer;
@@ -114,7 +113,7 @@ StyledRect {
             StyledText {
                 Layout.fillWidth: true
                 textFormat: Text.StyledText
-                text: Tr.trMarked(root.modelData.message)
+                text: root.modelData.message
                 color: {
                     if (root.modelData.type === Toast.Success)
                         return Colours.palette.m3onSuccessContainer;

@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Caelestia.Config
-import Caelestia.I18n
 import Caelestia.Models
 import qs.components
 import qs.components.containers
@@ -39,7 +38,7 @@ ColumnLayout {
             StyledText {
                 Layout.alignment: Qt.AlignVCenter
                 Layout.fillWidth: true
-                text: Tr.tr("Recordings")
+                text: qsTr("Recordings")
                 font: Tokens.font.body.medium
             }
 
@@ -93,7 +92,7 @@ ColumnLayout {
                         return time;
                     const date = new Date(...matches.slice(1));
                     date.setMonth(date.getMonth() - 1); // Woe (months start from 0)
-                    return Tr.tr("Recording at %1").arg(Qt.formatDateTime(date, Qt.locale()));
+                    return qsTr("Recording at %1").arg(Qt.formatDateTime(date, Qt.locale()));
                 }
                 color: Colours.palette.m3onSurfaceVariant
                 elide: Text.ElideRight
@@ -219,7 +218,7 @@ ColumnLayout {
                     }
 
                     StyledText {
-                        text: Tr.tr("No recordings found")
+                        text: qsTr("No recordings found")
                         color: Colours.palette.m3outline
                     }
                 }

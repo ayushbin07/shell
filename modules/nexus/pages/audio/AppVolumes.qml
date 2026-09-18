@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Pipewire
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 import qs.utils
@@ -14,7 +13,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: Tr.tr("App volumes")
+    title: qsTr("App volumes")
     isSubPage: true
 
     ColumnLayout {
@@ -27,7 +26,7 @@ PageBase {
             Layout.fillWidth: true
             Layout.leftMargin: Tokens.padding.small
             Layout.bottomMargin: Tokens.spacing.medium
-            text: Tr.tr("Adjust the volume of individual apps currently playing audio.")
+            text: qsTr("Adjust the volume of individual apps currently playing audio.")
             color: Colours.palette.m3outline
             font: Tokens.font.body.small
             wrapMode: Text.WordWrap
@@ -40,7 +39,7 @@ PageBase {
             last: true
             showList: true
             placeholderIcon: "music_off"
-            placeholderText: Tr.tr("No apps playing audio")
+            placeholderText: qsTr("No apps playing audio")
             color: list.count === 0 ? Colours.tPalette.m3surfaceContainer : "transparent"
             list.spacing: Tokens.spacing.extraSmall / 2
 
@@ -61,7 +60,7 @@ PageBase {
 
                 icon: Icons.getVolumeIcon(stream.modelData?.audio?.volume ?? 0, stream.modelData?.audio?.muted ?? false)
                 label: Audio.getStreamName(stream.modelData)
-                valueLabel: Strings.percentOne(value)
+                valueLabel: Math.round(value * 100) + "%"
                 value: stream.modelData?.audio?.volume ?? 0
                 enabled: !stream.modelData?.audio?.muted
                 onMoved: v => Audio.setStreamVolume(stream.modelData, v)

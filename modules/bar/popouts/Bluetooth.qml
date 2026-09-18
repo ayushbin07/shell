@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Bluetooth
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.services
@@ -22,12 +21,12 @@ ColumnLayout {
     StyledText {
         Layout.topMargin: Tokens.padding.medium
         Layout.rightMargin: Tokens.padding.extraSmall
-        text: Tr.tr("Bluetooth")
+        text: qsTr("Bluetooth")
         font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
     }
 
     Toggle {
-        label: Tr.trCtx("Enabled", "toggle label")
+        label: qsTr("Enabled")
         checked: Bluetooth.defaultAdapter?.enabled ?? false // qmllint disable unresolved-type
         toggle.onToggled: {
             const adapter = Bluetooth.defaultAdapter; // qmllint disable unresolved-type
@@ -37,7 +36,7 @@ ColumnLayout {
     }
 
     Toggle {
-        label: Tr.trCtx("Discovering", "bluetooth adapter state")
+        label: qsTr("Discovering")
         checked: Bluetooth.defaultAdapter?.discovering ?? false // qmllint disable unresolved-type
         toggle.onToggled: {
             const adapter = Bluetooth.defaultAdapter; // qmllint disable unresolved-type
@@ -51,11 +50,11 @@ ColumnLayout {
         Layout.rightMargin: Tokens.padding.extraSmall
         text: {
             const devices = Bluetooth.devices.values; // qmllint disable unresolved-type
+            let available = qsTr("%1 device%2 available").arg(devices.length).arg(devices.length === 1 ? "" : "s");
             const connected = devices.filter(d => d.connected).length;
             if (connected > 0)
-                // TRANSLATORS: %n = total paired devices, %1 = how many of them are connected
-                return Tr.trN("%n device available (%1 connected)", "%n devices available (%1 connected)", devices.length).arg(connected);
-            return Tr.trN("%n device available", "%n devices available", devices.length);
+                available += qsTr(" (%1 connected)").arg(connected);
+            return available;
         }
         color: Colours.palette.m3onSurfaceVariant
         font: Tokens.font.body.small
@@ -178,7 +177,7 @@ ColumnLayout {
         inactiveColour: Colours.palette.m3primaryContainer
         inactiveOnColour: Colours.palette.m3onPrimaryContainer
         verticalPadding: Tokens.padding.extraSmall
-        text: Tr.tr("Open settings")
+        text: qsTr("Open settings")
         icon: "settings"
 
         onClicked: root.popouts.detachRequested("bluetooth")

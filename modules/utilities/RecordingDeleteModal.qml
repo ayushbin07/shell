@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Caelestia
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.components.effects
@@ -168,13 +167,13 @@ Loader {
                 spacing: Tokens.spacing.medium
 
                 StyledText {
-                    text: Tr.tr("Delete recording?")
+                    text: qsTr("Delete recording?")
                     font: Tokens.font.body.large
                 }
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: Tr.tr("Recording '%1' will be permanently deleted.").arg(deleteConfirmation.path)
+                    text: qsTr("Recording '%1' will be permanently deleted.").arg(deleteConfirmation.path)
                     color: Colours.palette.m3onSurfaceVariant
                     font: Tokens.font.body.small
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -186,13 +185,13 @@ Loader {
                     spacing: Tokens.spacing.medium
 
                     TextButton {
-                        text: Tr.trCtx("Cancel", "button")
+                        text: qsTr("Cancel")
                         type: TextButton.Text
                         onClicked: root.props.recordingConfirmDelete = ""
                     }
 
                     TextButton {
-                        text: Tr.trCtx("Delete", "button")
+                        text: qsTr("Delete")
                         type: TextButton.Text
                         onClicked: {
                             CUtils.deleteFile(Qt.resolvedUrl(root.props.recordingConfirmDelete));

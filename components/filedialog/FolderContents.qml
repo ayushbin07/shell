@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Caelestia.Config
-import Caelestia.I18n
 import Caelestia.Models
 import qs.components
 import qs.components.controls
@@ -61,7 +60,7 @@ Item {
             }
 
             StyledText {
-                text: Tr.tr("This folder is empty")
+                text: qsTr("This folder is empty")
                 color: Colours.palette.m3outline
                 font: Tokens.font.body.builders.large.weight(Font.Medium).build()
             }

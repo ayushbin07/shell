@@ -1,10 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import Caelestia.Components
 import Caelestia.Config
-import Caelestia.I18n
-import Caelestia.Services
+import Caelestia.Internal
 import qs.components
+import qs.components.misc
 import qs.services
 
 StyledRect {
@@ -16,7 +15,7 @@ StyledRect {
     implicitWidth: Tokens.sizes.dashboard.perfNetworkCardWidth
     implicitHeight: Tokens.sizes.dashboard.perfNetworkCardHeight
 
-    ServiceRef {
+    Ref {
         service: NetworkUsage
     }
 
@@ -38,7 +37,7 @@ StyledRect {
             }
 
             StyledText {
-                text: Tr.tr("Network")
+                text: qsTr("Network")
                 font: Tokens.font.title.medium
             }
         }
@@ -94,7 +93,7 @@ StyledRect {
             // "Collecting data" placeholder
             StyledText {
                 anchors.centerIn: parent
-                text: Tr.tr("Collecting data...")
+                text: qsTr("Collecting data...")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3outline
                 visible: NetworkUsage.downloadBuffer.count < 2
@@ -113,7 +112,7 @@ StyledRect {
             }
 
             StyledText {
-                text: Tr.trCtx("Download", "network throughput")
+                text: qsTr("Download")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -123,7 +122,10 @@ StyledRect {
             }
 
             StyledText {
-                text: Units.formatBytes(NetworkUsage.downloadSpeed ?? 0, true)
+                text: {
+                    const fmt = NetworkUsage.formatBytes(NetworkUsage.downloadSpeed ?? 0);
+                    return fmt ? `${fmt.value.toFixed(1)} ${fmt.unit}` : "0.0 B/s";
+                }
                 font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
                 color: Colours.palette.m3tertiary
             }
@@ -141,7 +143,7 @@ StyledRect {
             }
 
             StyledText {
-                text: Tr.trCtx("Upload", "network throughput")
+                text: qsTr("Upload")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -151,7 +153,10 @@ StyledRect {
             }
 
             StyledText {
-                text: Units.formatBytes(NetworkUsage.uploadSpeed ?? 0, true)
+                text: {
+                    const fmt = NetworkUsage.formatBytes(NetworkUsage.uploadSpeed ?? 0);
+                    return fmt ? `${fmt.value.toFixed(1)} ${fmt.unit}` : "0.0 B/s";
+                }
                 font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
                 color: Colours.palette.m3secondary
             }
@@ -169,7 +174,7 @@ StyledRect {
             }
 
             StyledText {
-                text: Tr.trCtx("Total", "total network data transferred")
+                text: qsTr("Total")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -180,10 +185,9 @@ StyledRect {
 
             StyledText {
                 text: {
-                    const downText = Units.formatBytes(NetworkUsage.downloadTotal ?? 0);
-                    const upText = Units.formatBytes(NetworkUsage.uploadTotal ?? 0);
-                    // TRANSLATORS: %1 = downloaded total, %2 = uploaded total
-                    return Tr.tr("↓%1 ↑%2").arg(downText).arg(upText);
+                    const down = NetworkUsage.formatBytesTotal(NetworkUsage.downloadTotal ?? 0);
+                    const up = NetworkUsage.formatBytesTotal(NetworkUsage.uploadTotal ?? 0);
+                    return (down && up) ? `↓${down.value.toFixed(1)}${down.unit} ↑${up.value.toFixed(1)}${up.unit}` : "↓0.0B ↑0.0B";
                 }
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant

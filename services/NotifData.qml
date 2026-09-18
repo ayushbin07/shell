@@ -5,7 +5,6 @@ import Quickshell
 import Quickshell.Services.Notifications
 import Caelestia
 import Caelestia.Config
-import Caelestia.I18n
 import qs.services
 import qs.utils
 
@@ -17,20 +16,7 @@ QtObject {
     property var locks: new Set()
 
     property date time: new Date()
-    property int ageMins: 0
-    readonly property string timeStr: {
-        if (ageMins < 1)
-            return Tr.tr("now");
-
-        const h = Math.floor(ageMins / 60);
-        const d = Math.floor(h / 24);
-
-        if (d > 0)
-            return Tr.trCtx("%1d", "abbreviated notification age, days").arg(d);
-        if (h > 0)
-            return Tr.trCtx("%1h", "abbreviated notification age, hours").arg(h);
-        return Tr.trCtx("%1m", "abbreviated notification age, minutes").arg(ageMins);
-    }
+    property string timeStr: qsTr("now")
 
     readonly property Timer timeStrTimer: Timer {
         running: !notif.closed
@@ -185,20 +171,24 @@ QtObject {
     function updateTimeStr(): void {
         const diff = Date.now() - time.getTime();
         const m = Math.floor(diff / 60000);
-        ageMins = m;
 
         if (m < 1) {
+            timeStr = qsTr("now");
             timeStrTimer.interval = 5000;
         } else {
             const h = Math.floor(m / 60);
             const d = Math.floor(h / 24);
 
-            if (d > 0)
+            if (d > 0) {
+                timeStr = `${d}d`;
                 timeStrTimer.interval = 3600000;
-            else if (h > 0)
+            } else if (h > 0) {
+                timeStr = `${h}h`;
                 timeStrTimer.interval = 300000;
-            else
+            } else {
+                timeStr = `${m}m`;
                 timeStrTimer.interval = m < 10 ? 30000 : 60000;
+            }
         }
     }
 

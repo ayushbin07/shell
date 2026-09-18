@@ -2,11 +2,9 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
 import Caelestia.Config
-import Caelestia.I18n
 import Caelestia.Services
 import qs.components
 import qs.services
-import qs.utils
 
 StyledClippingRect {
     id: root
@@ -16,7 +14,7 @@ StyledClippingRect {
     color: Colours.palette.m3secondaryContainer
     radius: Tokens.rounding.large
 
-    implicitWidth: Config.dashboard.performance.showCpu || (Config.dashboard.performance.showGpu && Gpu.type !== GpuType.None) || Config.dashboard.performance.showStorage || Config.dashboard.performance.showMemory ? Tokens.sizes.dashboard.perfBattWidth : Tokens.sizes.dashboard.perfBattWidthSingle
+    implicitWidth: Config.dashboard.performance.showCpu || (Config.dashboard.performance.showGpu && Gpu.type !== Gpu.None) || Config.dashboard.performance.showStorage || Config.dashboard.performance.showMemory ? Tokens.sizes.dashboard.perfBattWidth : Tokens.sizes.dashboard.perfBattWidthSingle
     implicitHeight: Tokens.sizes.dashboard.perfBattHeight
 
     Behavior on animPerc {
@@ -76,7 +74,7 @@ StyledClippingRect {
 
         StyledText {
             Layout.fillWidth: true
-            text: Tr.tr("Battery")
+            text: qsTr("Battery")
             color: contents.textColour
             font: Tokens.font.body.medium
         }
@@ -89,23 +87,21 @@ StyledClippingRect {
             Layout.alignment: Qt.AlignRight
             text: {
                 if (UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
-                    return Tr.trCtx("Full", "battery state");
+                    return qsTr("Full");
 
                 if (contents.charging)
-                    return Tr.trCtx("Charging", "battery state");
+                    return qsTr("Charging");
 
                 const s = UPower.displayDevice.timeToEmpty;
                 if (s === 0)
-                    return "...";
+                    return qsTr("...");
 
                 const hr = Math.floor(s / 3600);
                 const min = Math.floor((s % 3600) / 60);
                 if (hr > 0)
-                    // TRANSLATORS: %1 = hours, %2 = minutes
-                    return Tr.trCtx("%1h %2m", "battery time remaining").arg(hr).arg(min);
+                    return `${hr}h ${min}m`;
 
-                // TRANSLATORS: %1 = minutes
-                return Tr.trCtx("%1m", "battery time remaining").arg(min);
+                return `${min}m`;
             }
             color: contents.subTextColour
             font: Tokens.font.body.small
@@ -142,7 +138,7 @@ StyledClippingRect {
             }
 
             StyledText {
-                text: Strings.percentOne(UPower.displayDevice.percentage)
+                text: `${Math.round(UPower.displayDevice.percentage * 100)}%`
                 color: contents.accentColour
                 font: Tokens.font.headline.medium
             }

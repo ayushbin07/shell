@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import Quickshell
 import Caelestia
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 
@@ -58,7 +57,7 @@ Item {
                 return Colours.palette.m3onSurface;
             }
 
-            text: root.math.length > 0 ? (Qalculator.result ? Tr.trMarked(Qalculator.result) : Tr.tr("Calculating...")) : Tr.tr("Type an expression to calculate")
+            text: root.math.length > 0 ? (Qalculator.result || qsTr("Calculating...")) : qsTr("Type an expression to calculate")
             elide: Text.ElideLeft
 
             Layout.fillWidth: true
@@ -93,7 +92,7 @@ Item {
                 anchors.right: icon.left
                 anchors.rightMargin: Tokens.spacing.small
 
-                text: Tr.tr("Open in calculator")
+                text: qsTr("Open in calculator")
                 color: Colours.palette.m3onTertiary
                 font: Tokens.font.label.medium
 

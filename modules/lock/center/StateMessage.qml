@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 import qs.modules.lock
@@ -15,27 +14,23 @@ Item {
     readonly property string msg: {
         // Errors
         if (pam.fprint.state === Pam.Error)
-            return Tr.tr("FP ERROR: %1").arg(pam.fprint.message);
+            return qsTr("FP ERROR: %1").arg(pam.fprint.message);
         if (pam.howdy.state === Pam.Error)
-            return Tr.tr("FACE ERROR: %1").arg(pam.howdy.message);
+            return qsTr("FACE ERROR: %1").arg(pam.howdy.message);
         if (pam.state === Pam.Error)
-            return Tr.tr("PW ERROR: %1").arg(pam.passwd.message);
+            return qsTr("PW ERROR: %1").arg(pam.passwd.message);
 
         // Fprint/howdy fail
         if (pam.state !== Pam.MaxTries) {
             if (pam.fprint.state === Pam.Failed)
-                // TRANSLATORS: %1 = attempts used so far, %2 = maximum attempts allowed
-                return Tr.tr("Fingerprint not recognised (%1/%2). Please try again or use password.").arg(pam.fprint.tries).arg(GlobalConfig.lock.maxFprintTries);
+                return qsTr("Fingerprint not recognized (%1/%2). Please try again or use password.").arg(pam.fprint.tries).arg(GlobalConfig.lock.maxFprintTries);
             if (pam.howdy.state === Pam.Failed)
-                // TRANSLATORS: %1 = attempts used so far, %2 = maximum attempts allowed
-                return Tr.tr("Face not recognised (%1/%2). Please try again or use password.").arg(pam.howdy.tries).arg(GlobalConfig.lock.maxHowdyTries);
+                return qsTr("Face not recognized (%1/%2). Please try again or use password.").arg(pam.howdy.tries).arg(GlobalConfig.lock.maxHowdyTries);
         } else {
             if (pam.fprint.state === Pam.Failed)
-                // TRANSLATORS: %1 = attempts used so far, %2 = maximum attempts allowed
-                return Tr.tr("Fingerprint not recognised (%1/%2). Please try again.").arg(pam.fprint.tries).arg(GlobalConfig.lock.maxFprintTries);
+                return qsTr("Fingerprint not recognized (%1/%2). Please try again.").arg(pam.fprint.tries).arg(GlobalConfig.lock.maxFprintTries);
             if (pam.howdy.state === Pam.Failed)
-                // TRANSLATORS: %1 = attempts used so far, %2 = maximum attempts allowed
-                return Tr.tr("Face not recognised (%1/%2). Please try again.").arg(pam.howdy.tries).arg(GlobalConfig.lock.maxHowdyTries);
+                return qsTr("Face not recognized (%1/%2). Please try again.").arg(pam.howdy.tries).arg(GlobalConfig.lock.maxHowdyTries);
         }
 
         if (pam.lockMessage) // Password max tries message
@@ -44,26 +39,26 @@ Item {
         // Password fail
         if (pam.state === Pam.Failed) {
             if (pam.fprint.available && pam.fprint.state !== Pam.MaxTries)
-                return Tr.tr("Incorrect password. Please try again or use fingerprint.");
+                return qsTr("Incorrect password. Please try again or use fingerprint.");
             if (pam.howdy.available && pam.howdy.state !== Pam.MaxTries)
-                return Tr.tr("Incorrect password. Please try again or use face.");
-            return Tr.tr("Incorrect password. Please try again.");
+                return qsTr("Incorrect password. Please try again or use face.");
+            return qsTr("Incorrect password. Please try again.");
         }
 
         // Maxed out
         if (pam.state === Pam.MaxTries) {
             if (pam.fprint.available && pam.fprint.state !== Pam.MaxTries)
-                return Tr.tr("Maximum password attempts reached. Please use fingerprint.");
+                return qsTr("Maximum password attempts reached. Please use fingerprint.");
             if (pam.howdy.available && pam.howdy.state !== Pam.MaxTries)
-                return Tr.tr("Maximum password attempts reached. Please use face.");
+                return qsTr("Maximum password attempts reached. Please use face.");
             if (pam.fprint.available || pam.howdy.available)
-                return Tr.tr("Maximum attempts for all authentication methods reached.");
-            return Tr.tr("Maximum password attempts reached.");
+                return qsTr("Maximum attempts for all authentication methods reached.");
+            return qsTr("Maximum password attempts reached.");
         }
         if (pam.fprint.state === Pam.MaxTries)
-            return Tr.tr("Maximum fingerprint attempts reached. Please use password.");
+            return qsTr("Maximum fingerprint attempts reached. Please use password.");
         if (pam.howdy.state === Pam.MaxTries)
-            return Tr.tr("Maximum face attempts reached. Please use password.");
+            return qsTr("Maximum face attempts reached. Please use password.");
 
         return "";
     }
@@ -71,24 +66,20 @@ Item {
     readonly property string stateMsg: {
         if (Hypr.kbLayout !== Hypr.defaultKbLayout) {
             if (Hypr.capsLock && Hypr.numLock)
-                // TRANSLATORS: %1 = the active keyboard layout name, e.g. "English (US)"
-                return Tr.tr("Caps lock and Num lock are ON.\nKeyboard layout: %1").arg(Hypr.kbLayoutFull);
+                return qsTr("Caps lock and Num lock are ON.\nKeyboard layout: %1").arg(Hypr.kbLayoutFull);
             if (Hypr.capsLock)
-                // TRANSLATORS: %1 = the active keyboard layout name, e.g. "English (US)"
-                return Tr.tr("Caps lock is ON. Keyboard layout: %1").arg(Hypr.kbLayoutFull);
+                return qsTr("Caps lock is ON. Kb layout: %1").arg(Hypr.kbLayoutFull);
             if (Hypr.numLock)
-                // TRANSLATORS: %1 = the active keyboard layout name, e.g. "English (US)"
-                return Tr.tr("Num lock is ON. Keyboard layout: %1").arg(Hypr.kbLayoutFull);
-            // TRANSLATORS: %1 = the active keyboard layout name, e.g. "English (US)"
-            return Tr.tr("Keyboard layout: %1").arg(Hypr.kbLayoutFull);
+                return qsTr("Num lock is ON. Kb layout: %1").arg(Hypr.kbLayoutFull);
+            return qsTr("Keyboard layout: %1").arg(Hypr.kbLayoutFull);
         }
 
         if (Hypr.capsLock && Hypr.numLock)
-            return Tr.tr("Caps lock and Num lock are ON.");
+            return qsTr("Caps lock and Num lock are ON.");
         if (Hypr.capsLock)
-            return Tr.tr("Caps lock is ON.");
+            return qsTr("Caps lock is ON.");
         if (Hypr.numLock)
-            return Tr.tr("Num lock is ON.");
+            return qsTr("Num lock is ON.");
 
         return "";
     }

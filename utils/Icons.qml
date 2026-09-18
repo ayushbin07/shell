@@ -79,45 +79,11 @@ Singleton {
             Office: "content_paste"
         })
 
-    // qmlformat off
-    readonly property list<string> networkIcons: [
-        "signal_wifi_0_bar",
-        "network_wifi_1_bar",
-        "network_wifi_2_bar",
-        "network_wifi_3_bar",
-        "network_wifi"
-    ]
-
-    readonly property var bluetoothIconRules: [
-        [["headset", "headphones"], "headphones"],
-        [["audio"], "speaker"],
-        [["phone"], "smartphone"],
-        [["mouse"], "mouse"],
-        [["keyboard"], "keyboard"]
-    ]
-
-    readonly property var notifIconRules: [
-        [["reboot"], "restart_alt"],
-        [["recording"], "screen_record"],
-        [["battery"], "power"],
-        [["screenshot"], "screenshot_monitor"],
-        [["welcome"], "waving_hand"],
-        [["time", "a break"], "schedule"],
-        [["installed"], "download"],
-        [["update"], "update"],
-        [["unable to"], "deployed_code_alert"],
-        [["profile"], "person"],
-        [["file"], "folder_copy"]
-    ]
-    // qmlformat on
-
-    /**
-     * Checks if a name matches an icon config. Icon configs can have the following keys:
-     * - name: The exact name of the icon
-     * - regex: A regex to match against the name (takes priority over name)
-     * - flags: The regex flags (only used if regex is set)
-     * - icon: The icon to use
-     */
+    // Checks if a name matches an icon config. Icon configs can have the following keys:
+    // - name: The exact name of the icon
+    // - regex: A regex to match against the name (takes priority over name)
+    // - flags: The regex flags (only used if regex is set)
+    // - icon: The icon to use
     function matchIconConfig(name: string, iconConfig: var): bool {
         if (!iconConfig.icon)
             return false;
@@ -154,36 +120,77 @@ Singleton {
         return fallback;
     }
 
-    /**
-     * Accepts a list of tables containing matching rules (strings) and their corresponding results.
-     * If any of the strings are found in the text, returns the result associated with them. Otherwise returns the fallback.
-     */
-    function matchIcon(text: string, rules: var, fallback: string): string {
-        for (const [needles, result] of rules)
-            if (needles.some(n => text.includes(n)))
-                return result;
-
-        return fallback;
-    }
-
     function getNetworkIcon(strength: int, isSecure = false): string {
-        const level = Math.max(0, Math.min(4, Math.floor(strength / 20)));
-        const icon = networkIcons[level];
-
-        return isSecure && level > 0 ? `${icon}_locked` : icon;
+        if (isSecure) {
+            if (strength >= 80)
+                return "network_wifi_locked";
+            if (strength >= 60)
+                return "network_wifi_3_bar_locked";
+            if (strength >= 40)
+                return "network_wifi_2_bar_locked";
+            if (strength >= 20)
+                return "network_wifi_1_bar_locked";
+            return "signal_wifi_0_bar";
+        } else {
+            if (strength >= 80)
+                return "network_wifi";
+            if (strength >= 60)
+                return "network_wifi_3_bar";
+            if (strength >= 40)
+                return "network_wifi_2_bar";
+            if (strength >= 20)
+                return "network_wifi_1_bar";
+            return "signal_wifi_0_bar";
+        }
     }
 
     function getBluetoothIcon(icon: string): string {
-        return matchIcon(icon, bluetoothIconRules, "bluetooth");
+        if (icon.includes("headset") || icon.includes("headphones"))
+            return "headphones";
+        if (icon.includes("audio"))
+            return "speaker";
+        if (icon.includes("phone"))
+            return "smartphone";
+        if (icon.includes("mouse"))
+            return "mouse";
+        if (icon.includes("keyboard"))
+            return "keyboard";
+        return "bluetooth";
     }
 
     function getWeatherIcon(code: string): string {
-        return weatherIcons[code] ?? "air";
+        if (weatherIcons.hasOwnProperty(code))
+            return weatherIcons[code];
+        return "air";
     }
 
     function getNotifIcon(summary: string, urgency: int): string {
-        const fallback = urgency === NotificationUrgency.Critical ? "release_alert" : "chat";
-        return matchIcon(summary.toLowerCase(), notifIconRules, fallback);
+        summary = summary.toLowerCase();
+        if (summary.includes("reboot"))
+            return "restart_alt";
+        if (summary.includes("recording"))
+            return "screen_record";
+        if (summary.includes("battery"))
+            return "power";
+        if (summary.includes("screenshot"))
+            return "screenshot_monitor";
+        if (summary.includes("welcome"))
+            return "waving_hand";
+        if (summary.includes("time") || summary.includes("a break"))
+            return "schedule";
+        if (summary.includes("installed"))
+            return "download";
+        if (summary.includes("update"))
+            return "update";
+        if (summary.includes("unable to"))
+            return "deployed_code_alert";
+        if (summary.includes("profile"))
+            return "person";
+        if (summary.includes("file"))
+            return "folder_copy";
+        if (urgency === NotificationUrgency.Critical)
+            return "release_alert";
+        return "chat";
     }
 
     function getVolumeIcon(volume: real, isMuted: bool): string {
@@ -197,7 +204,9 @@ Singleton {
     }
 
     function getMicVolumeIcon(volume: real, isMuted: bool): string {
-        return !isMuted && volume > 0 ? "mic" : "mic_off";
+        if (!isMuted && volume > 0)
+            return "mic";
+        return "mic_off";
     }
 
     function getSpecialWsIcon(name: string): string {
@@ -207,20 +216,17 @@ Singleton {
             if (matchIconConfig(name, iconConfig))
                 return iconConfig.icon;
 
-        switch (name) {
-        case "special":
+        if (name === "special")
             return "star";
-        case "communication":
+        if (name === "communication")
             return "forum";
-        case "music":
+        if (name === "music")
             return "music_cast";
-        case "todo":
+        if (name === "todo")
             return "checklist";
-        case "sysmon":
+        if (name === "sysmon")
             return "monitor_heart";
-        default:
-            return name[0].toUpperCase();
-        }
+        return name[0].toUpperCase();
     }
 
     function getTrayIcon(id: string, icon: string): string {

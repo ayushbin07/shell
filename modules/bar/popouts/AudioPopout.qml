@@ -5,7 +5,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Services.Pipewire
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.services
@@ -15,7 +14,7 @@ Item {
 
     required property PopoutState popouts
 
-    implicitWidth: Tokens.sizes.bar.audioWidth
+    implicitWidth: layout.implicitWidth + Tokens.padding.medium * 2
     implicitHeight: layout.implicitHeight + Tokens.padding.medium * 2
 
     ButtonGroup {
@@ -30,12 +29,11 @@ Item {
         id: layout
 
         anchors.left: parent.left
-        anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         spacing: Tokens.spacing.medium
 
         StyledText {
-            text: Tr.trCtx("Output device", "audio output device")
+            text: qsTr("Output device")
             font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
         }
 
@@ -47,7 +45,6 @@ Item {
 
                 required property PwNode modelData
 
-                Layout.fillWidth: true
                 ButtonGroup.group: sinks
                 checked: Audio.sink?.id === modelData.id
                 onClicked: Audio.setAudioSink(modelData)
@@ -57,7 +54,7 @@ Item {
 
         StyledText {
             Layout.topMargin: Tokens.spacing.medium
-            text: Tr.trCtx("Input device", "audio input device")
+            text: qsTr("Input device")
             font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
         }
 
@@ -67,7 +64,6 @@ Item {
             StyledRadioButton {
                 required property PwNode modelData
 
-                Layout.fillWidth: true
                 ButtonGroup.group: sources
                 checked: Audio.source?.id === modelData.id
                 onClicked: Audio.setAudioSource(modelData)
@@ -77,7 +73,7 @@ Item {
 
         StyledText {
             Layout.topMargin: Tokens.spacing.medium
-            text: Audio.muted ? Tr.tr("Volume (muted)") : Tr.tr("Volume (%1%)").arg(Math.round(Audio.volume * 100))
+            text: qsTr("Volume (%1)").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
             font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
         }
 
@@ -108,7 +104,7 @@ Item {
             inactiveColour: Colours.palette.m3primaryContainer
             inactiveOnColour: Colours.palette.m3onPrimaryContainer
             verticalPadding: Tokens.padding.extraSmall
-            text: Tr.tr("Open settings")
+            text: qsTr("Open settings")
             icon: "settings"
 
             onClicked: root.popouts.detachRequested("audio")

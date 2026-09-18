@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.services
@@ -11,45 +9,27 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    // Temperature units (there must be one for each value of the TemperatureUnit enum)
+    // Temperature units (index 0 = Celsius, 1 = Fahrenheit — matches Weather.formatTemp)
     readonly property list<MenuItem> tempItems: [
         MenuItem {
-            text: Tr.tr("°C")
-            value: TemperatureUnit.Celsius
+            text: "°C"
         },
         MenuItem {
-            text: Tr.tr("°F")
-            value: TemperatureUnit.Fahrenheit
-        },
-        MenuItem {
-            text: Tr.tr("K")
-            value: TemperatureUnit.Kelvin
-        }
-    ]
-
-    // Data size units (there must be one for each value of the DataUnit enum)
-    readonly property list<MenuItem> dataItems: [
-        MenuItem {
-            text: Tr.tr("Binary (KiB, MiB)")
-            value: DataUnit.Binary
-        },
-        MenuItem {
-            text: Tr.tr("Decimal (KB, MB)")
-            value: DataUnit.Decimal
+            text: "°F"
         }
     ]
 
     // Clock format (index 0 = 24-hour, 1 = 12-hour — matches Time.useTwelveHourClock)
     readonly property list<MenuItem> clockItems: [
         MenuItem {
-            text: Tr.tr("24-hour")
+            text: qsTr("24-hour")
         },
         MenuItem {
-            text: Tr.tr("12-hour")
+            text: qsTr("12-hour")
         }
     ]
 
-    title: Tr.tr("Language & region")
+    title: qsTr("Language & region")
 
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -60,46 +40,56 @@ PageBase {
         // Language
         SectionHeader {
             first: true
-            text: Tr.tr("Language")
+            text: qsTr("Language")
         }
 
-        SelectRow {
+        // Read-only: the shell follows the system locale (no in-shell translations yet)
+        ConnectedRect {
+            Layout.fillWidth: true
             first: true
             last: true
-            label: Tr.tr("UI language")
-            subtext: Tr.tr("The language used in the shell UI")
-            active: menuItems.find(i => i.modelData === Tr.language) ?? autoLang
-            onSelected: item => {
-                Tr.language = item.modelData ?? ""; // qmllint disable missing-property
-            }
+            implicitHeight: localeLayout.implicitHeight + localeLayout.anchors.margins * 2
 
-            menuItems: [autoLang, ...langItems.instances]
+            RowLayout {
+                id: localeLayout
 
-            MenuItem {
-                id: autoLang
+                anchors.fill: parent
+                anchors.margins: Tokens.padding.medium
+                anchors.leftMargin: Tokens.padding.largeIncreased
+                anchors.rightMargin: Tokens.padding.largeIncreased
+                spacing: Tokens.spacing.medium
 
-                text: Tr.tr("Auto")
-            }
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 0
 
-            Variants {
-                id: langItems
-
-                model: Tr.supportedLanguages
-
-                MenuItem {
-                    required property string modelData
-
-                    text: {
-                        const locale = Qt.locale(modelData);
-                        return locale.name === "C" ? modelData : locale.nativeLanguageName || locale.name;
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: qsTr("System language")
+                        font: Tokens.font.body.small
+                        elide: Text.ElideRight
                     }
+
+                    StyledText {
+                        Layout.fillWidth: true
+                        text: qsTr("Follows your system locale (%1)").arg(Qt.locale().name)
+                        color: Colours.palette.m3outline
+                        font: Tokens.font.label.small
+                        elide: Text.ElideRight
+                    }
+                }
+
+                StyledText {
+                    text: Qt.locale().nativeLanguageName || Qt.locale().name
+                    color: Colours.palette.m3onSurfaceVariant
+                    font: Tokens.font.body.small
                 }
             }
         }
 
         // Weather
         SectionHeader {
-            text: Tr.tr("Weather")
+            text: qsTr("Weather")
         }
 
         // Placeholder until the map-based location picker lands
@@ -125,7 +115,7 @@ PageBase {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: Tr.tr("Location picker coming soon")
+                    text: qsTr("Location picker coming soon")
                     color: Colours.palette.m3outlineVariant
                     font: Tokens.font.title.small
                 }
@@ -134,7 +124,7 @@ PageBase {
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap
-                    text: Tr.tr("Choose your weather location on a map in a future update")
+                    text: qsTr("Choose your weather location on a map in a future update")
                     color: Colours.palette.m3outlineVariant
                     font: Tokens.font.body.small
                 }
@@ -143,45 +133,37 @@ PageBase {
 
         // Units
         SectionHeader {
-            text: Tr.tr("Units")
+            text: qsTr("Units")
         }
 
         SelectRow {
             first: true
-            label: Tr.tr("Temperature")
-            subtext: Tr.tr("Units for weather temperatures")
+            label: qsTr("Temperature")
+            subtext: qsTr("Units for weather temperatures")
             menuItems: root.tempItems
-            active: root.tempItems.find(i => i.value === GlobalConfig.services.weatherUnits)
-            onSelected: item => GlobalConfig.services.weatherUnits = item.value
-        }
-
-        SelectRow {
-            label: Tr.tr("System temperatures")
-            subtext: Tr.tr("Units for CPU and GPU temperatures")
-            menuItems: root.tempItems
-            active: root.tempItems.find(i => i.value === GlobalConfig.services.sensorUnits)
-            onSelected: item => GlobalConfig.services.sensorUnits = item.value
+            active: root.tempItems[GlobalConfig.services.useFahrenheit ? 1 : 0]
+            onSelected: item => GlobalConfig.services.useFahrenheit = root.tempItems.indexOf(item) === 1
         }
 
         SelectRow {
             last: true
-            label: Tr.tr("Data sizes")
-            subtext: Tr.tr("Units for data sizes and network speeds")
-            menuItems: root.dataItems
-            active: root.dataItems.find(i => i.value === GlobalConfig.services.dataUnits)
-            onSelected: item => GlobalConfig.services.dataUnits = item.value
+            label: qsTr("System temperatures")
+            subtext: qsTr("Units for CPU and GPU temperatures")
+            menuItems: root.tempItems
+            active: root.tempItems[GlobalConfig.services.useFahrenheitPerformance ? 1 : 0]
+            onSelected: item => GlobalConfig.services.useFahrenheitPerformance = root.tempItems.indexOf(item) === 1
         }
 
         // Time & date
         SectionHeader {
-            text: Tr.tr("Time & date")
+            text: qsTr("Time & date")
         }
 
         SelectRow {
             first: true
             last: true
-            label: Tr.tr("Clock format")
-            subtext: Tr.tr("How times are shown across the shell")
+            label: qsTr("Clock format")
+            subtext: qsTr("How times are shown across the shell")
             menuItems: root.clockItems
             active: root.clockItems[GlobalConfig.services.useTwelveHourClock ? 1 : 0]
             onSelected: item => GlobalConfig.services.useTwelveHourClock = root.clockItems.indexOf(item) === 1

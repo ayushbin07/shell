@@ -2,11 +2,9 @@ import QtQuick
 import QtQuick.Layouts
 import M3Shapes
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.components.controls
 import qs.services
-import qs.utils
 
 StyledRect {
     id: root
@@ -95,7 +93,7 @@ StyledRect {
             }
 
             StyledText {
-                text: Units.formatSensorTemp(root.temperature)
+                text: `${Math.ceil(GlobalConfig.services.useFahrenheitPerformance ? root.temperature * 1.8 + 32 : root.temperature)}°${GlobalConfig.services.useFahrenheitPerformance ? "F" : "C"}`
                 font: Tokens.font.body.builders.medium.build()
             }
         }
@@ -135,15 +133,14 @@ StyledRect {
             anchors.bottom: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
 
-            // TRANSLATORS: labels the CPU or GPU utilisation percentage shown below it
-            text: Tr.trCtx("Usage", "resource usage")
+            text: qsTr("Usage")
             color: Colours.palette.m3onSurfaceVariant
             font: Tokens.font.body.small
         }
 
         StyledText {
             anchors.centerIn: parent
-            text: isNaN(root.usage) ? "..." : Strings.percentOne(root.usage)
+            text: isNaN(root.usage) ? "...%" : Math.round(root.usage * 100) + "%"
             color: root.accent
             font: Tokens.font.headline.builders.small.width(50).build()
         }

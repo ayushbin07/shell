@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
 import Caelestia.Config
-import Caelestia.I18n
 import Caelestia.Services
 import qs.components
 import qs.components.containers
@@ -189,7 +188,7 @@ Item {
             }
 
             StyledText {
-                text: Tr.tr("Loading lyrics...")
+                text: qsTr("Loading lyrics...")
                 color: Colours.palette.m3onSurfaceVariant
                 font: Tokens.font.title.medium
             }
@@ -221,7 +220,7 @@ Item {
             }
 
             StyledText {
-                text: Tr.tr("No lyrics found")
+                text: qsTr("No lyrics found")
                 color: Colours.palette.m3outline
                 font: Tokens.font.title.medium
             }
@@ -256,7 +255,6 @@ Item {
 
         spacing: Tokens.spacing.small
         opacity: 0
-        enabled: opacity > 0
 
         delegate: StyledText {
             id: lyric

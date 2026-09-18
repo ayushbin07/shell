@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 import qs.utils
@@ -14,7 +13,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: Tr.tr("All apps")
+    title: qsTr("All apps")
     isSubPage: true
 
     ColumnLayout {

@@ -6,7 +6,6 @@ import Quickshell.Io
 import Quickshell.Services.Mpris
 import Caelestia
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components.misc
 
 Singleton {
@@ -62,7 +61,7 @@ Singleton {
             return;
 
         lastNowPlayingKey = key;
-        Toaster.toast(Tr.tr("Now playing"), Tr.trCtx("%1 - %2", "track artist and title").arg(artist).arg(title), "music_note");
+        Toaster.toast(qsTr("Now Playing"), qsTr("%1 - %2").arg(artist).arg(title), "music_note");
     }
 
     onActiveChanged: lastNowPlayingKey = ""

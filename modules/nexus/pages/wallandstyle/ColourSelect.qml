@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Caelestia.Config
-import Caelestia.I18n
 import qs.components
 import qs.services
 import qs.modules.nexus.common
@@ -9,7 +8,7 @@ import qs.modules.nexus.common
 PageBase {
     id: root
 
-    title: Tr.tr("Colours")
+    title: qsTr("Colours")
     isSubPage: true
 
     Item {
@@ -32,14 +31,14 @@ PageBase {
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: Tr.tr("Page under construction")
+                text: qsTr("Page under construction")
                 color: Colours.palette.m3outlineVariant
                 font: Tokens.font.title.large
             }
 
             StyledText {
                 Layout.alignment: Qt.AlignHCenter
-                text: Tr.tr("This page will be available in a future update.")
+                text: qsTr("This page will be available in a future update.")
                 color: Colours.palette.m3outlineVariant
                 font: Tokens.font.body.large
             }
