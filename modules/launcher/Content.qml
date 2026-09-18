@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Caelestia
 import Caelestia.Config
 import qs.components
@@ -77,6 +78,9 @@ Item {
                     Apps.launch(currentItem.modelData);
                     root.screenState.launcher = false;
                 }
+            } else if (text.trim().length > 0 && !text.startsWith(GlobalConfig.launcher.actionPrefix)) {
+                Quickshell.execDetached(["xdg-open", `https://www.google.com/search?q=${encodeURIComponent(text.trim())}`]);
+                root.screenState.launcher = false;
             }
         }
 

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Quickshell
 import Caelestia.Config
 import qs.components
 import qs.components.controls
@@ -21,6 +22,7 @@ Item {
     readonly property bool showWallpapers: search.text.startsWith(`${GlobalConfig.launcher.actionPrefix}wallpaper `)
     readonly property var currentList: showWallpapers ? wallpaperList.item : appList.item // Can be either ListView or PathView, so can't type properly
     property string animState: showWallpapers ? "wallpapers" : "apps"
+    readonly property bool isWebSearch: root.state === "apps" && root.search.text.trim().length > 0 && !root.search.text.startsWith(GlobalConfig.launcher.actionPrefix)
 
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
@@ -109,39 +111,70 @@ Item {
         }
     }
 
-    Row {
+    Item {
         id: empty
 
         opacity: root.currentList?.count === 0 ? 1 : 0
         scale: root.currentList?.count === 0 ? 1 : 0.5
 
-        spacing: Tokens.spacing.medium
-        padding: Tokens.padding.large
+        implicitWidth: emptyRow.implicitWidth + (root.isWebSearch ? Tokens.padding.large * 2 : 0)
+        implicitHeight: emptyRow.implicitHeight + (root.isWebSearch ? Tokens.padding.medium * 2 : 0)
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
 
-        MaterialIcon {
-            text: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
-            color: Colours.palette.m3onSurfaceVariant
-            fontStyle: Tokens.font.icon.extraLarge
+        StateLayer {
+            id: stateLayer
 
-            anchors.verticalCenter: parent.verticalCenter
+            visible: root.isWebSearch
+            radius: Tokens.rounding.large
+            onClicked: {
+                Quickshell.execDetached(["xdg-open", `https://www.google.com/search?q=${encodeURIComponent(root.search.text.trim())}`]);
+                root.screenState.launcher = false;
+            }
         }
 
-        Column {
-            anchors.verticalCenter: parent.verticalCenter
+        Row {
+            id: emptyRow
 
-            StyledText {
-                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No results")
-                color: Colours.palette.m3onSurfaceVariant
-                font: Tokens.font.body.builders.large.weight(Font.Medium).build()
+            anchors.centerIn: parent
+            spacing: Tokens.spacing.medium
+            padding: root.isWebSearch ? 0 : Tokens.padding.large
+
+            MaterialIcon {
+                text: root.state === "wallpapers" ? "wallpaper_slideshow" : (root.isWebSearch ? "travel_explore" : "manage_search")
+                color: root.isWebSearch ? Colours.palette.m3primary : Colours.palette.m3onSurfaceVariant
+                fontStyle: Tokens.font.icon.extraLarge
+
+                anchors.verticalCenter: parent.verticalCenter
             }
 
-            StyledText {
-                text: root.state === "wallpapers" && Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else")
-                color: Colours.palette.m3onSurfaceVariant
-                font: Tokens.font.body.medium
+            Column {
+                anchors.verticalCenter: parent.verticalCenter
+
+                StyledText {
+                    text: {
+                        if (root.state === "wallpapers")
+                            return qsTr("No wallpapers found");
+                        if (root.isWebSearch)
+                            return qsTr("Search Google for \"%1\"").arg(root.search.text.trim());
+                        return qsTr("No results");
+                    }
+                    color: root.isWebSearch ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
+                    font: Tokens.font.body.builders.large.weight(Font.Medium).build()
+                }
+
+                StyledText {
+                    text: {
+                        if (root.state === "wallpapers")
+                            return Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else");
+                        if (root.isWebSearch)
+                            return qsTr("Press Enter or click to open in browser");
+                        return qsTr("Try searching for something else");
+                    }
+                    color: Colours.palette.m3outline
+                    font: Tokens.font.body.medium
+                }
             }
         }
 
