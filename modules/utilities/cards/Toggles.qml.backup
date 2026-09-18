@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
+import Caelestia
 import Caelestia.Components
 import Caelestia.Config
 import qs.components
@@ -19,8 +20,18 @@ StyledRect {
 
     readonly property var quickToggles: {
         const seenIds = new Set();
+        const configured = Config.utilities.quickToggles.values;
+        const list = [...configured];
 
-        return Config.utilities.quickToggles.values.filter(item => {
+        if (!configured.some(item => item.id === "nightLight")) {
+            list.push({ id: "nightLight", enabled: true });
+        }
+
+        if (!configured.some(item => item.id === "visualiser")) {
+            list.push({ id: "visualiser", enabled: true });
+        }
+
+        return list.filter(item => {
             if (!item.enabled)
                 return false;
 
@@ -136,6 +147,29 @@ StyledRect {
                         icon: "notifications_off"
                         checked: Notifs.dnd
                         onClicked: Notifs.dnd = !Notifs.dnd
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "nightLight"
+                    delegate: Toggle {
+                        icon: "nightlight"
+                        checked: NightLight.enabled
+                        onClicked: NightLight.toggle()
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "visualiser"
+                    delegate: Toggle {
+                        icon: "graphic_eq"
+                        checked: Config.background.visualiser.enabled
+                        onClicked: {
+                            GlobalConfig.background.visualiser.enabled = !GlobalConfig.background.visualiser.enabled;
+                            Toaster.toast(
+                                GlobalConfig.background.visualiser.enabled ? qsTr("Visualizer enabled") : qsTr("Visualizer disabled"),
+                                GlobalConfig.background.visualiser.enabled ? qsTr("Desktop audio spectrum bars active") : qsTr("Desktop audio spectrum bars turned off"),
+                                "graphic_eq"
+                            );
+                        }
                     }
                 }
                 DelegateChoice {
