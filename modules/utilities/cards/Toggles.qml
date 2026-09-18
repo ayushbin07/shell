@@ -19,8 +19,14 @@ StyledRect {
 
     readonly property var quickToggles: {
         const seenIds = new Set();
+        const configured = Config.utilities.quickToggles.values;
+        const list = [...configured];
 
-        return Config.utilities.quickToggles.values.filter(item => {
+        if (!configured.some(item => item.id === "nightLight")) {
+            list.push({ id: "nightLight", enabled: true });
+        }
+
+        return list.filter(item => {
             if (!item.enabled)
                 return false;
 
@@ -136,6 +142,14 @@ StyledRect {
                         icon: "notifications_off"
                         checked: Notifs.dnd
                         onClicked: Notifs.dnd = !Notifs.dnd
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "nightLight"
+                    delegate: Toggle {
+                        icon: "nightlight"
+                        checked: NightLight.enabled
+                        onClicked: NightLight.toggle()
                     }
                 }
                 DelegateChoice {
