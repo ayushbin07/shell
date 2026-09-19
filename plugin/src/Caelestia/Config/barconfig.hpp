@@ -19,6 +19,7 @@ class BarScrollActions : public settings::ObjectNode {
     CONFIG_PROPERTY(bool, workspaces, true)
     CONFIG_PROPERTY(bool, volume, true)
     CONFIG_PROPERTY(bool, brightness, true)
+    CONFIG_PROPERTY(bool, hotCornerWorkspaces, true)
 };
 
 class BarPopouts : public settings::ObjectNode {

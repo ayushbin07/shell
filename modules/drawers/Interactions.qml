@@ -6,6 +6,7 @@ import qs.components
 import qs.components.controls
 import qs.modules.bar as Bar
 import qs.modules.bar.popouts as BarPopouts
+import qs.services
 
 CustomMouseArea {
     id: root
@@ -56,6 +57,16 @@ CustomMouseArea {
             return;
         if (event.x < bar.implicitWidth) {
             bar.handleWheel(event.y, event.angleDelta);
+        } else if ((Config.bar.scrollActions.hotCornerWorkspaces ?? true)
+                   && event.x > width - Math.max(Config.border.minThickness, panels.notifications.width)
+                   && event.y < borderThickness + Math.max(panels.notifications.height, 50)) {
+            // Top-right hot corner: scroll switches workspaces
+            const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor);
+            const specialWs = mon?.lastIpcObject.specialWorkspace.name;
+            if (specialWs?.length > 0)
+                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.workspace.toggle_special("${specialWs.slice(8)}")` : `togglespecialworkspace ${specialWs.slice(8)}`);
+            else if (event.angleDelta.y < 0 || (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? mon.activeWorkspace?.id : Hypr.activeWsId) > 1)
+                Hypr.dispatch(Hypr.usingLua ? `hl.dsp.focus({ workspace = "r${event.angleDelta.y > 0 ? "-" : "+"}1" })` : `workspace r${event.angleDelta.y > 0 ? "-" : "+"}1`);
         }
     }
 

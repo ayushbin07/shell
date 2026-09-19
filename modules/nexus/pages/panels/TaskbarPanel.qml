@@ -111,11 +111,18 @@ PageBase {
         }
 
         ToggleRow {
-            last: true
             text: qsTr("Brightness")
             subtext: qsTr("Scroll on the bottom half of the bar to adjust brightness")
             checked: Config.bar.scrollActions.brightness
             onToggled: GlobalConfig.bar.scrollActions.brightness = checked
+        }
+
+        ToggleRow {
+            last: true
+            text: qsTr("Hot corner (workspaces)")
+            subtext: qsTr("Scroll in the top-right corner to switch workspaces")
+            checked: Config.bar.scrollActions.hotCornerWorkspaces
+            onToggled: GlobalConfig.bar.scrollActions.hotCornerWorkspaces = checked
         }
     }
 }
