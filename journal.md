@@ -569,6 +569,29 @@ code ~/.config/quickshell/caelestia
 
 ## Change Log
 
+### 2026-09-20
+
+- Added scroll-to-adjust-temperature feature on the Eye Protection quick toggle.
+- **`services/NightLight.qml`**:
+  - Added persistent `temperature` property (default `4500K`, range `1000K–6500K`, step `100K`) to `PersistentProperties`.
+  - Added `tempMin`, `tempMax`, `tempStep` readonly constants.
+  - Added `setTemperature(temp: int)` function that clamps the value and restarts a 100ms debounce timer (`applyTimer`).
+  - **Alternating toggle bug & CTM manager race condition fix**:
+    - `hyprsunset` v0.4.0 uses the `hyprland-ctm-control-v1` protocol which permits only a single CTM manager on the compositor at any time.
+    - Standard `pkill` sends SIGTERM and returns immediately without waiting for process exit.
+    - When `sh -c "pkill ...; hyprsunset -t ..."` ran, the new `hyprsunset` launched before the old one terminated, failed with `✖ A CTM manager is already running on the current compositor.`, and exited.
+    - Once the old process finished dying, 0 instances were running. On the next scroll (+100K), `pkill` found nothing to kill, so the new instance succeeded — creating the observed bug where every alternate 100K step toggled the feature on/off.
+    - **Fix**: Replaced raw `pkill` with `pkill -x hyprsunset; while pgrep -x hyprsunset > /dev/null; do sleep 0.01; done; hyprsunset -t <temp>`. Rather than `killall -w` (which uses a coarse 1-second sleep interval), polling `pgrep` every 10ms detects process exit in ~100ms and immediately spawns the new `hyprsunset` without delay.
+    - **Debounce Timer**: Added a 100ms non-repeating `Timer` (`applyTimer`) to coalesce rapid wheel ticks. This prevents spawning multiple competing subshells during fast scrolls and stops toast notifications from spamming.
+  - Added `getTemperature()` and `setTemperature(temp: int)` to `IpcHandler` for CLI/IPC control (`qs -p ... ipc call nightLight setTemperature 3500`).
+  - `onEnabledChanged` now uses the stored temperature and ensures clean process termination on disable.
+- **`modules/utilities/cards/Toggles.qml`**:
+  - Wrapped the `nightLight` toggle in an `Item` with `property bool fillWidth: true` so `ButtonRow` (C++ type that reads `fillWidth` via `child->property("fillWidth")`) sizes it correctly.
+  - Added an overlay `MouseArea` with `acceptedButtons: Qt.NoButton` and `propagateComposedEvents: true` to capture scroll events without blocking click-through to the underlying `Toggle`.
+  - **Lesson**: `WheelHandler` placed inside a `MouseArea` subtree gets its events consumed by the `MouseArea`. The working solution is a sibling overlay `MouseArea` with `acceptedButtons: Qt.NoButton`.
+  - Scroll up = +100K, scroll down = −100K. Clamped in `NightLight.setTemperature()`.
+  - Temperature persists across shell restarts via `PersistentProperties`.
+
 ### 2026-09-18
 
 - Opened the Caelestia configuration directory in VS Code.

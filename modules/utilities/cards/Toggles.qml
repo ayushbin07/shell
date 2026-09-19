@@ -151,10 +151,30 @@ StyledRect {
                 }
                 DelegateChoice {
                     roleValue: "nightLight"
-                    delegate: Toggle {
-                        icon: "nightlight"
-                        checked: NightLight.enabled
-                        onClicked: NightLight.toggle()
+                    delegate: Item {
+                        property bool fillWidth: true
+                        implicitWidth: _toggle.implicitWidth
+                        implicitHeight: _toggle.implicitHeight
+
+                        Toggle {
+                            id: _toggle
+                            anchors.fill: parent
+                            icon: "nightlight"
+                            checked: NightLight.enabled
+                            onClicked: NightLight.toggle()
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.NoButton
+                            propagateComposedEvents: true
+                            onWheel: event => {
+                                if (event.angleDelta.y > 0)
+                                    NightLight.setTemperature(NightLight.temperature + NightLight.tempStep);
+                                else if (event.angleDelta.y < 0)
+                                    NightLight.setTemperature(NightLight.temperature - NightLight.tempStep);
+                            }
+                        }
                     }
                 }
                 DelegateChoice {
