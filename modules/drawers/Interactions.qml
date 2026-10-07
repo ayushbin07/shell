@@ -23,6 +23,8 @@ CustomMouseArea {
     property bool dashboardShortcutActive
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
+    property int openMenuCount: 0
+    readonly property bool hasOpenMenu: openMenuCount > 0
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
         const panelY = root.borderThickness + panel.y;
@@ -35,6 +37,29 @@ CustomMouseArea {
     }
 
     function inLeftPanel(panel: Item, x: real, y: real): bool {
+        if (panel === panels.popoutsWrapper) {
+            const clip = panels.popoutsWrapper;
+            const content = clip.content;
+            if (!content || !content.hasCurrent)
+                return false;
+
+            const targetWidth = Math.max(clip.width, content.nonAnimWidth, content.implicitWidth);
+            const targetHeight = Math.max(clip.height, content.nonAnimHeight, content.implicitHeight);
+
+            if (x > bar.implicitWidth + clip.x + targetWidth + Config.border.rounding)
+                return false;
+
+            const off = content.currentCenter - root.borderThickness - targetHeight / 2;
+            const diff = clip.parent.height - Math.floor(off + targetHeight);
+            const targetY = root.borderThickness + (diff < 0 ? off + diff : Math.max(off, 0));
+            const currentY = root.borderThickness + clip.y;
+
+            const minY = Math.min(targetY, currentY, content.currentCenter - 30) - Config.border.rounding;
+            const maxY = Math.max(targetY + targetHeight, currentY + clip.height, content.currentCenter + 30) + Config.border.rounding;
+
+            return y >= minY && y <= maxY;
+        }
+
         return x < bar.implicitWidth + panel.x + panel.width && withinPanelHeight(panel, x, y);
     }
 
@@ -57,9 +82,7 @@ CustomMouseArea {
             return;
         if (event.x < bar.implicitWidth) {
             bar.handleWheel(event.y, event.angleDelta);
-        } else if ((Config.bar.scrollActions.hotCornerWorkspaces ?? true)
-                   && event.x > width - Math.max(Config.border.minThickness, panels.notifications.width)
-                   && event.y < borderThickness + Math.max(panels.notifications.height, 50)) {
+        } else if ((Config.bar.scrollActions.hotCornerWorkspaces ?? true) && event.x > width - Math.max(Config.border.minThickness, panels.notifications.width) && event.y < borderThickness + Math.max(panels.notifications.height, 50)) {
             // Top-right hot corner: scroll switches workspaces
             const mon = (GlobalConfig.bar.workspaces.perMonitorWorkspaces ? Hypr.monitorFor(screen) : Hypr.focusedMonitor);
             const specialWs = mon?.lastIpcObject.specialWorkspace.name;
@@ -83,10 +106,10 @@ CustomMouseArea {
                 root.panels.osd.hovered = false;
             }
 
-            if (!dashboardShortcutActive)
+            if (!dashboardShortcutActive && !hasOpenMenu)
                 screenState.dashboard = false;
 
-            if (!utilitiesShortcutActive)
+            if (!utilitiesShortcutActive && !hasOpenMenu)
                 screenState.utilities = false;
 
             if (!popouts.currentName.startsWith("traymenu") || ((popouts.current as StackView)?.depth ?? 0) <= 1) {
@@ -222,7 +245,7 @@ CustomMouseArea {
         const showDashboard = Config.dashboard.showOnHover && inTopPanel(panels.dashboard, x, y);
 
         // Always update visibility based on hover if not in shortcut mode
-        if (!dashboardShortcutActive) {
+        if (!dashboardShortcutActive && !hasOpenMenu) {
             screenState.dashboard = showDashboard;
         } else if (showDashboard) {
             // If hovering over dashboard area while in shortcut mode, transition to hover control
@@ -241,7 +264,7 @@ CustomMouseArea {
         const showUtilities = inBottomPanel(panels.utilities, x, y, true);
 
         // Always update visibility based on hover if not in shortcut mode
-        if (!utilitiesShortcutActive) {
+        if (!utilitiesShortcutActive && !hasOpenMenu) {
             screenState.utilities = showUtilities;
         } else if (showUtilities) {
             // If hovering over utilities area while in shortcut mode, transition to hover control

@@ -31,6 +31,10 @@ StyledRect {
             list.push({ id: "visualiser", enabled: true });
         }
 
+        if (!configured.some(item => item.id === "media")) {
+            list.push({ id: "media", enabled: true });
+        }
+
         return list.filter(item => {
             if (!item.enabled)
                 return false;
@@ -150,9 +154,18 @@ StyledRect {
                     }
                 }
                 DelegateChoice {
+                    roleValue: "media"
+                    delegate: Toggle {
+                        icon: "queue_music"
+                        checked: root.screenState.fullscreenMedia
+                        onClicked: root.screenState.fullscreenMedia = !root.screenState.fullscreenMedia
+                    }
+                }
+                DelegateChoice {
                     roleValue: "nightLight"
                     delegate: Item {
                         property bool fillWidth: true
+                        property real shapeMorphExpansion: _toggle.shapeMorphExpansion
                         implicitWidth: _toggle.implicitWidth
                         implicitHeight: _toggle.implicitHeight
 

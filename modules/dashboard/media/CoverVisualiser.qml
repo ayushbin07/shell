@@ -13,10 +13,12 @@ import qs.services
 Item {
     id: root
 
+    property real coverSize: Tokens.sizes.dashboard.mediaCoverArtSize
+
     readonly property real centerX: width / 2
     readonly property real centerY: height / 2
     readonly property real spacing: Tokens.spacing.medium
-    readonly property real maxMagnitude: (implicitWidth - cover.implicitWidth) / 2 - spacing
+    readonly property real maxMagnitude: ((width || implicitWidth) - cover.implicitWidth) / 2 - spacing
 
     ServiceRef {
         service: Audio.cava
@@ -76,7 +78,7 @@ Item {
 
         anchors.centerIn: parent
         shape.shape: MaterialShape.Cookie9Sided
-        implicitWidth: Tokens.sizes.dashboard.mediaCoverArtSize
-        implicitHeight: Tokens.sizes.dashboard.mediaCoverArtSize
+        implicitWidth: root.coverSize
+        implicitHeight: root.coverSize
     }
 }

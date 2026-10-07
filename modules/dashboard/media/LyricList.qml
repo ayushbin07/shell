@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
+import Quickshell
 import Caelestia.Config
 import Caelestia.Services
 import qs.components
@@ -24,8 +25,112 @@ Item {
     }
 
     readonly property real fadeAmount: 0.1
-    property bool flag
     property list<string> lyricList: Lyrics.lyrics
+    property font lyricFont: Tokens.font.body.medium
+    property font currentLyricFont: Tokens.font.body.medium
+
+    property bool hasLyrics: Lyrics.hasLyrics && lyricList.length > 0
+    readonly property bool isLoading: !hasLyrics && Lyrics.loading
+    readonly property bool showNoLyrics: !hasLyrics && !isLoading
+
+    // Current active lyric index according to player position
+    readonly property int activeLyricIndex: {
+        root.lyricList;
+        Lyrics.offset;
+        const p = Players.active;
+        if (!p || !root.hasLyrics)
+            return -1;
+        return Lyrics.indexForTime(p.position);
+    }
+
+    onActiveLyricIndexChanged: {
+        if (!lyrics.moving && !lyrics.flicking && !resumeAutoScrollTimer.running) {
+            syncToActiveLyric(true);
+        }
+    }
+
+    onHeightChanged: {
+        if (root.hasLyrics && lyrics.count > 0 && !lyrics.moving && !lyrics.flicking) {
+            syncToActiveLyric(false);
+        }
+    }
+
+    function syncToActiveLyric(smooth: bool): void {
+        if (!root.hasLyrics || lyrics.count <= 0)
+            return;
+
+        const target = Math.max(0, Math.min(root.activeLyricIndex, lyrics.count - 1));
+        if (lyrics.currentIndex !== target) {
+            lyrics.currentIndex = target;
+        }
+        if (!smooth) {
+            lyrics.positionViewAtIndex(target, ListView.Center);
+        }
+    }
+
+    // Timer to poll player position changes so lyrics continuously update
+    Timer {
+        id: positionTimer
+        running: root.hasLyrics && (Players.active?.isPlaying ?? false)
+        interval: Math.min(250, GlobalConfig.dashboard.mediaUpdateInterval)
+        triggeredOnStart: true
+        repeat: true
+        onTriggered: Players.active?.positionChanged()
+    }
+
+    // Auto-scroll resume timer: after user finishes manual scrolling, resume auto-centering
+    Timer {
+        id: resumeAutoScrollTimer
+        interval: 2500
+        repeat: false
+        onTriggered: root.syncToActiveLyric(true)
+    }
+
+    Connections {
+        target: lyrics
+
+        function onMovingChanged(): void {
+            if (lyrics.moving) {
+                resumeAutoScrollTimer.stop();
+            } else if (!lyrics.flicking) {
+                resumeAutoScrollTimer.restart();
+            }
+        }
+
+        function onFlickingChanged(): void {
+            if (lyrics.flicking) {
+                resumeAutoScrollTimer.stop();
+            } else if (!lyrics.moving) {
+                resumeAutoScrollTimer.restart();
+            }
+        }
+    }
+
+    onLyricListChanged: {
+        hasLyrics = Lyrics.hasLyrics && lyricList.length > 0;
+        Qt.callLater(() => {
+            syncToActiveLyric(false);
+        });
+    }
+
+    Component.onCompleted: {
+        syncToActiveLyric(false);
+    }
+
+    Connections {
+        target: Lyrics
+
+        function onHasLyricsChanged(): void {
+            root.hasLyrics = Lyrics.hasLyrics && root.lyricList.length > 0;
+        }
+
+        function onLyricsChanged(): void {
+            Qt.callLater(() => {
+                root.hasLyrics = Lyrics.hasLyrics && root.lyricList.length > 0;
+                root.syncToActiveLyric(false);
+            });
+        }
+    }
 
     layer.enabled: true
     layer.effect: Mask {
@@ -62,111 +167,20 @@ Item {
         }
     }
 
-    state: {
-        flag; // For some reason it doesn't update sometimes, so use this to force an update
-        if (Lyrics.hasLyrics)
-            return "hasLyrics";
-        if (Lyrics.loading)
-            return "loading";
-        return "noLyrics";
-    }
-
-    states: [
-        State {
-            name: "loading"
-
-            PropertyChanges {
-                loadingIndicator.opacity: 1
-                lyrics.opacity: 0
-                noLyrics.opacity: 0
-            }
-        },
-        State {
-            name: "hasLyrics"
-
-            PropertyChanges {
-                loadingIndicator.opacity: 0
-                lyrics.opacity: 1
-                noLyrics.opacity: 0
-            }
-        },
-        State {
-            name: "noLyrics"
-
-            PropertyChanges {
-                loadingIndicator.opacity: 0
-                lyrics.opacity: 0
-                noLyrics.opacity: 1
-            }
-        }
-    ]
-
-    transitions: [
-        Transition {
-            from: "loading"
-
-            SequentialAnimation {
-                Anim {
-                    target: loadingIndicator
-                    property: "opacity"
-                    type: Anim.DefaultEffects
-                }
-                Anim {
-                    targets: [lyrics, noLyrics]
-                    property: "opacity"
-                    type: Anim.SlowEffects
-                }
-            }
-        },
-        Transition {
-            from: "hasLyrics"
-
-            SequentialAnimation {
-                Anim {
-                    target: lyrics
-                    property: "opacity"
-                    type: Anim.DefaultEffects
-                }
-                Anim {
-                    targets: [loadingIndicator, noLyrics]
-                    property: "opacity"
-                    type: Anim.SlowEffects
-                }
-            }
-        },
-        Transition {
-            from: "noLyrics"
-
-            SequentialAnimation {
-                Anim {
-                    target: noLyrics
-                    property: "opacity"
-                    type: Anim.DefaultEffects
-                }
-                Anim {
-                    targets: [loadingIndicator, lyrics]
-                    property: "opacity"
-                    type: Anim.SlowEffects
-                }
-            }
-        }
-    ]
-
-    Connections {
-        function onHasLyricsChanged() {
-            root.flag = !root.flag;
-        }
-
-        target: Lyrics
-    }
-
     Loader {
         id: loadingIndicator
 
         anchors.centerIn: parent
         asynchronous: true
         active: opacity > 0
-        opacity: 0
+        visible: opacity > 0
+        opacity: root.isLoading ? 1 : 0
+
+        Behavior on opacity {
+            Anim {
+                type: Anim.DefaultEffects
+            }
+        }
 
         sourceComponent: ColumnLayout {
             spacing: Tokens.spacing.large
@@ -194,11 +208,8 @@ Item {
             }
         }
 
-        Behavior on opacity {
-            Anim {
-                type: Anim.DefaultEffects
-            }
-        }
+
+
     }
 
     Loader {
@@ -207,19 +218,30 @@ Item {
         anchors.centerIn: parent
         asynchronous: true
         active: opacity > 0
-        opacity: 0
+        visible: opacity > 0
+        opacity: root.showNoLyrics ? 1 : 0
+
+        Behavior on opacity {
+            Anim {
+                type: Anim.DefaultEffects
+            }
+        }
 
         sourceComponent: ColumnLayout {
-            spacing: Tokens.spacing.small
+            spacing: Tokens.spacing.medium
 
-            MaterialIcon {
+            AnimatedImage {
                 Layout.alignment: Qt.AlignHCenter
-                text: "sentiment_sad"
-                fontStyle: Tokens.font.icon.builders.large.scale(2).build()
-                color: Colours.palette.m3outline
+                Layout.preferredWidth: Math.min(root.width * 0.8, 260)
+                Layout.preferredHeight: Math.min(root.height * 0.5, 260)
+                source: Quickshell.shellPath("assets/no-lyrics.gif")
+                playing: Players.active?.isPlaying ?? true
+                fillMode: AnimatedImage.PreserveAspectFit
+                asynchronous: true
             }
 
             StyledText {
+                Layout.alignment: Qt.AlignHCenter
                 text: qsTr("No lyrics found")
                 color: Colours.palette.m3outline
                 font: Tokens.font.title.medium
@@ -234,42 +256,51 @@ Item {
         anchors.topMargin: parent.height * root.fadeAmount / 2
         anchors.bottomMargin: parent.height * root.fadeAmount / 2
 
-        displayMarginBeginning: anchors.topMargin
-        displayMarginEnd: anchors.bottomMargin
+        displayMarginBeginning: lyrics.height
+        displayMarginEnd: lyrics.height
 
         model: root.lyricList
-        Component.onCompleted: {
-            currentIndex = Qt.binding(() => {
-                model; // Force update when lyrics change
-                return Lyrics.indexForTime(Players.active?.position ?? 0);
-            });
-            positionViewAtIndex(currentIndex, ListView.Center);
-        }
-        onModelChanged: Qt.callLater(() => positionViewAtIndex(currentIndex, ListView.Center))
 
-        highlightRangeMode: ListView.ApplyRange
+        highlightFollowsCurrentItem: true
+        highlightRangeMode: ListView.StrictlyEnforceRange
         highlightMoveDuration: Tokens.anim.durations.large
         highlightMoveVelocity: -1
-        preferredHighlightBegin: (height - (currentItem?.implicitHeight ?? 0)) / 2
-        preferredHighlightEnd: (height + (currentItem?.implicitHeight ?? 0)) / 2
+        preferredHighlightBegin: height > 0 ? Math.round((height - (currentItem?.implicitHeight ?? currentItem?.height ?? 32)) / 2) : 0
+        preferredHighlightEnd: height > 0 ? Math.round((height + (currentItem?.implicitHeight ?? currentItem?.height ?? 32)) / 2) : 0
 
         spacing: Tokens.spacing.small
-        opacity: 0
+        visible: opacity > 0
+        opacity: root.hasLyrics ? 1 : 0
+
+        header: Item {
+            width: lyrics.width
+            height: Math.max(0, Math.round(lyrics.height / 2))
+        }
+
+        footer: Item {
+            width: lyrics.width
+            height: Math.max(0, Math.round(lyrics.height / 2))
+        }
 
         delegate: StyledText {
             id: lyric
 
             required property string modelData
             required property int index
-            property real effectScale: ListView.isCurrentItem ? 1 : 0
+            readonly property bool isActive: index === root.activeLyricIndex
+            property real effectScale: isActive ? 1 : 0
 
             anchors.left: lyrics.contentItem.left
             anchors.right: lyrics.contentItem.right
 
             text: modelData || ". . ."
-            color: ListView.isCurrentItem ? Colours.palette.m3primary : mouse.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3outline
-            font: Tokens.font.body.medium
+            color: isActive ? Colours.palette.m3primary : mouse.containsMouse ? Colours.palette.m3onSurface : Colours.palette.m3outline
+            font: isActive ? root.currentLyricFont : root.lyricFont
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+            Behavior on color {
+                CAnim {}
+            }
 
             layer.enabled: effectScale > 0
             layer.effect: MultiEffect {
@@ -294,8 +325,12 @@ Item {
                 hoverEnabled: true
                 onClicked: {
                     const p = Players.active;
-                    if (p)
+                    if (p) {
+                        resumeAutoScrollTimer.stop();
                         p.position = Lyrics.timeForIndex(lyric.index);
+                        lyrics.currentIndex = lyric.index;
+                        lyrics.positionViewAtIndex(lyric.index, ListView.Center);
+                    }
                 }
             }
         }

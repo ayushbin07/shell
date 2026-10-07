@@ -44,7 +44,7 @@ Item {
     }
 
     Behavior on y {
-        enabled: root.offsetScale < 1
+        enabled: root.offsetScale < 0.05
 
         Anim {
             duration: content.animLength

@@ -41,9 +41,23 @@ MouseArea {
     anchors.fill: parent
 
     enabled: expanded
-    hoverEnabled: expanded
+    hoverEnabled: false
     cursorShape: expanded ? Qt.ArrowCursor : undefined
     onClicked: expanded = false
+
+    onExpandedChanged: {
+        const contentWin = QsWindow.window as ContentWindow;
+        if (contentWin?.interactionWrapper)
+            contentWin.interactionWrapper.openMenuCount += (expanded ? 1 : -1);
+    }
+
+    Component.onDestruction: {
+        if (expanded) {
+            const contentWin = QsWindow.window as ContentWindow;
+            if (contentWin?.interactionWrapper)
+                contentWin.interactionWrapper.openMenuCount = Math.max(0, contentWin.interactionWrapper.openMenuCount - 1);
+        }
+    }
 
     opacity: expanded ? 1 : 0
     layer.enabled: opacity < 1

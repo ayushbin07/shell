@@ -69,7 +69,7 @@ Region {
 
     R {
         panel: root.panels.popoutsWrapper
-        width: panel.width * (1 - root.panels.popoutsWrapper.offsetScale)
+        width: panel.content.nonAnimWidth * (1 - root.panels.popoutsWrapper.offsetScale)
     }
 
     component R: Region {

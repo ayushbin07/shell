@@ -134,6 +134,14 @@ PageBase {
         }
 
         ToggleRow {
+            text: qsTr("Media player")
+            subtext: qsTr("Toggle fullscreen media player")
+            disabled: !Config.utilities.cards.quickToggles
+            checked: root.isToggleOn("media")
+            onToggled: root.setToggleOn("media", checked)
+        }
+
+        ToggleRow {
             last: true
             text: qsTr("VPN")
             subtext: qsTr("Connect or disconnect the VPN")

@@ -108,6 +108,17 @@ Scope {
         }
     }
 
+    // qmllint disable unresolved-type
+    CustomShortcut {
+        // qmllint enable unresolved-type
+        name: "fullscreenMedia"
+        description: "Toggle fullscreen media player"
+        onPressed: {
+            const screenState = ShellState.forActive();
+            screenState.fullscreenMedia = !screenState.fullscreenMedia;
+        }
+    }
+
     IpcHandler {
         function toggle(drawer: string): void {
             if (list().split("\n").includes(drawer)) {

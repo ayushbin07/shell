@@ -8,6 +8,11 @@ import qs.components.controls
 import qs.services
 
 Item {
+    id: root
+
+    property alias lyricFont: lyricList.lyricFont
+    property alias currentLyricFont: lyricList.currentLyricFont
+
     ColumnLayout {
         id: layout
 
@@ -36,6 +41,8 @@ Item {
         }
 
         LyricList {
+            id: lyricList
+
             Layout.fillWidth: true
             Layout.fillHeight: true
         }

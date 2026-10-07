@@ -25,6 +25,11 @@ ColumnLayout {
         return `${mins}:${secs}`;
     }
 
+    property font titleFont: Tokens.font.title.large
+    property font artistFont: Tokens.font.title.medium
+    property font albumFont: Tokens.font.title.medium
+    property real buttonScale: 1.0
+
     spacing: Tokens.spacing.extraSmall
 
     Timer {
@@ -38,7 +43,7 @@ ColumnLayout {
     StyledText {
         Layout.fillWidth: true
         text: Players.active?.trackTitle ?? ""
-        font: Tokens.font.title.large
+        font: root.titleFont
         elide: Text.ElideRight
         animate: true
     }
@@ -47,7 +52,7 @@ ColumnLayout {
         Layout.fillWidth: true
         text: Players.active?.trackArtist || qsTr("Unknown artist")
         color: Colours.palette.m3onSurfaceVariant
-        font: Tokens.font.title.medium
+        font: root.artistFont
         elide: Text.ElideRight
         animate: true
     }
@@ -56,7 +61,7 @@ ColumnLayout {
         Layout.fillWidth: true
         text: Players.active?.trackAlbum || qsTr("Unknown album")
         color: Colours.palette.m3secondary
-        font: Tokens.font.title.medium
+        font: root.albumFont
         elide: Text.ElideRight
         animate: true
     }
@@ -119,19 +124,20 @@ ColumnLayout {
 
     ButtonRow {
         Layout.topMargin: Tokens.spacing.largeIncreased
-        Layout.fillWidth: true
-        spacing: Tokens.spacing.extraSmall
+        Layout.alignment: Qt.AlignHCenter
+        spacing: Math.max(Tokens.spacing.small, Math.round(Tokens.spacing.small * root.buttonScale))
 
         IconButton {
             type: IconButton.Tonal
             icon: "shuffle"
             isRound: true
             shapeMorph: true
+            checkedRadius: Tokens.rounding.full
             checked: Players.active?.shuffle ?? false
-            font: Tokens.font.icon.builders.medium.weight(Font.Medium).build()
+            font: Tokens.font.icon.builders.medium.weight(Font.Medium).scale(root.buttonScale).build()
             disabled: !Players.active?.shuffleSupported
             onClicked: Players.active.shuffle = !Players.active?.shuffle
-            implicitWidth: Math.round(implicitHeight * 0.9)
+            implicitWidth: Math.round(implicitHeight * 0.95)
         }
 
         IconButton {
@@ -141,9 +147,10 @@ ColumnLayout {
             icon: "skip_previous"
             isRound: true
             shapeMorph: true
-            font: Tokens.font.icon.large
+            font: Tokens.font.icon.builders.large.scale(root.buttonScale).build()
             disabled: !Players.active?.canGoPrevious
             onClicked: Players.active?.previous()
+            implicitWidth: implicitHeight
         }
 
         IconButton {
@@ -152,11 +159,10 @@ ColumnLayout {
             icon: Players.active?.isPlaying ? "pause" : "play_arrow"
             isRound: true
             shapeMorph: true
-            fillWidth: true
-            checked: Players.active?.isPlaying ?? false
-            font: Tokens.font.icon.large
+            font: Tokens.font.icon.builders.large.scale(root.buttonScale * 1.15).build()
             disabled: !Players.active?.canTogglePlaying
             onClicked: Players.active?.togglePlaying()
+            implicitWidth: Math.round(implicitHeight * 1.25)
         }
 
         IconButton {
@@ -166,9 +172,10 @@ ColumnLayout {
             icon: "skip_next"
             isRound: true
             shapeMorph: true
-            font: Tokens.font.icon.large
+            font: Tokens.font.icon.builders.large.scale(root.buttonScale).build()
             disabled: !Players.active?.canGoNext
             onClicked: Players.active?.next()
+            implicitWidth: implicitHeight
         }
 
         IconButton {
@@ -176,8 +183,9 @@ ColumnLayout {
             icon: Players.active?.loopState === MprisLoopState.Track ? "repeat_one" : "repeat"
             isRound: true
             shapeMorph: true
+            checkedRadius: Tokens.rounding.full
             checked: Players.active?.loopState === MprisLoopState.Track || Players.active?.loopState === MprisLoopState.Playlist
-            font: Tokens.font.icon.builders.medium.weight(Font.Medium).build()
+            font: Tokens.font.icon.builders.medium.weight(Font.Medium).scale(root.buttonScale).build()
             disabled: !Players.active?.loopSupported
             onClicked: {
                 const state = Players.active.loopState;
@@ -188,7 +196,7 @@ ColumnLayout {
                 else
                     Players.active.loopState = MprisLoopState.None;
             }
-            implicitWidth: Math.round(implicitHeight * 0.9)
+            implicitWidth: Math.round(implicitHeight * 0.95)
         }
     }
 }
